@@ -6,7 +6,6 @@ CONTRACT_SYSTEM_PROMPT = "You respond as Solidity AI Assistant that generates sm
 
 def get_cocom_prompt(message: str, context: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{COMPLETION_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    # The first user input is _not_ stripped
     if len(context):
         texts.append(f'Using this Solidity code context ```\n{context}\n``` ')
     message = message.strip()
@@ -15,7 +14,6 @@ def get_cocom_prompt(message: str, context: str) -> str:
 
 def get_cogen_prompt(message: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{GENERATION_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    # The first user input is _not_ stripped
     message = message.strip()
     texts.append(f'{message} [/INST]')
     return ''.join(texts)
@@ -23,7 +21,6 @@ def get_cogen_prompt(message: str) -> str:
 
 def get_codexplain_prompt(message: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{EXPLAIN_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    # The first user input is _not_ stripped
     
     message = message.strip()
     texts.append(f'Explain the following Solidity code:\n ```{message}``` [/INST]')
@@ -32,7 +29,6 @@ def get_codexplain_prompt(message: str) -> str:
 
 def get_errexplain_prompt(message: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{ERROR_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    # The first user input is _not_ stripped
     
     message = message.strip()
     texts.append(f'Explain the following Solidity error message and how to resolve it:\n ```{message}``` [/INST]')
@@ -40,7 +36,6 @@ def get_errexplain_prompt(message: str) -> str:
 
 def get_contractgen_prompt(message: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{CONTRACT_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    # The first user input is _not_ stripped
     message = message.strip()
     texts.append(f'Only write a smart contract respective code: {message} [/INST]')
     return ''.join(texts)
