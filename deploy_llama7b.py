@@ -60,4 +60,4 @@ app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen],
                           "error_explaining", "contract_generation"])
 
 if __name__ == "__main__":
-    app.launch(share=True).queue(3)
+    app.queue(5).launch(share=True, root_path="/ai-tools")
