@@ -3,6 +3,7 @@ COMPLETION_SYSTEM_PROMPT = "You are a Solidity AI Assistant that complete user c
 EXPLAIN_SYSTEM_PROMPT = "You are Solidity AI Assistant that explain Solidity code. You explain code using a JSON format. You provide accurate solution and always answer as helpfully as possible, while being safe"
 ERROR_SYSTEM_PROMPT = "You are AI Assistant that explains solidity errors and warnings. You provide accurate error description and respective solution. Always answer as helpfully as possible, while being safe."
 CONTRACT_SYSTEM_PROMPT = "You respond as Solidity AI Assistant that generates smart contracts contracts. You provide accurate solution and always answer as helpfully as possible, while being safe."
+ANSWERING_SYSTEM_PROMPT = "You only respond as Solidity AI Assistant that provides correct answers to user requests. You provide accurate solution and always answer as helpfully as possible, while being safe."
 
 def get_cocom_prompt(message: str, context: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{COMPLETION_SYSTEM_PROMPT}\n<</SYS>>\n\n']
@@ -18,6 +19,12 @@ def get_cogen_prompt(message: str) -> str:
     texts.append(f'{message} [/INST]')
     return ''.join(texts)
 
+def get_answer_prompt(message: str) -> str:
+    message = message.split('sol-gpt')[-1]
+    texts = [f'<s>[INST] <<SYS>>\n{ANSWERING_SYSTEM_PROMPT}\n<</SYS>>\n\n']
+    message = message.strip()
+    texts.append(f'{message} [/INST]')
+    return ''.join(texts)
 
 def get_codexplain_prompt(message: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{EXPLAIN_SYSTEM_PROMPT}\n<</SYS>>\n\n']

@@ -249,3 +249,45 @@ def run_contract_generation(
         text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
         text = get_string_between(text, "```", "```") if '```' in text else text
         yield text
+
+def run_answering(
+    prompt: str,
+    stream_result: bool=True,
+    max_new_tokens: int = 1024,
+    temperature: float = 0.1,
+    top_p: float = 0.9,
+    top_k: int = 50) -> Iterator[str]:
+    prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
+    
+    print('INFO - Solidit answering: model input:', prompt)
+    inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
+
+    streamer = TextIteratorStreamer(tokenizer,
+                                    timeout=10.,
+                                    skip_prompt=True,
+                                    skip_special_tokens=True)
+    generate_kwargs = dict(
+        inputs,
+        streamer=streamer if stream_result else None,
+        max_new_tokens=max_new_tokens,
+        do_sample=True,
+        top_p=top_p,
+        top_k=top_k,
+        temperature=temperature,
+        num_beams=1,
+        pad_token_id=tokenizer.eos_token_id,
+    )
+
+    if stream_result: 
+        t = Thread(target=model.generate, kwargs=generate_kwargs)
+        t.start()
+
+        outputs = []
+        for text in streamer:
+            outputs.append(text)
+            yield ''.join(outputs)
+    else: 
+        outputs = model.generate(**generate_kwargs)
+        text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
+        text = get_string_between(text, "```", "```") if '```' in text else text
+        yield text
