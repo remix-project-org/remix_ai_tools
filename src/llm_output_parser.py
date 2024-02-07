@@ -59,9 +59,9 @@ class StoppingCriteriaSub(StoppingCriteria):
             self.old_input_ids = input_ids[0]
 
         if  self.in_code_token in new_tokens and not self.completion and not self.in_code:
-            print(self.in_code_token, "is in ", new_tokens)
+            # print(self.in_code_token, "is in ", new_tokens)
             self.in_code += 1
-            print('Info: got in code', self.in_code)
+            # print('Info: got in code', self.in_code)
             return False
         
         elif self.in_code_token in new_tokens and self.completion:
@@ -77,8 +77,8 @@ class StoppingCriteriaSub(StoppingCriteria):
             if stop in new_tokens:
 
                 if self.in_code:
-                    print('last token is stop', new_tokens)
-                    print('Info: in code value', self.in_code)
+                    # print('last token is stop', new_tokens)
+                    # print('Info: in code value', self.in_code)
                     self.in_code -= 1
                 #     if self.completion :
                 #         print('INFO: Stopped generation')

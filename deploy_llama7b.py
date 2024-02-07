@@ -1,6 +1,9 @@
-
 import gradio as gr
+import os
+from dotenv import load_dotenv
 from src.model_inference import *
+
+load_dotenv()
 
 codecomp = gr.Interface(
     fn=run_code_completion,
@@ -61,3 +64,4 @@ app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen],
 
 if __name__ == "__main__":
     app.queue(5).launch(share=True, root_path="/ai-tools")
+    # app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))

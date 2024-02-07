@@ -1,3 +1,4 @@
 flagged
 ./gradio_deploy
 src/__pycache__/
+.env

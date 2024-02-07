@@ -74,7 +74,6 @@ def run_code_completion(
     else: 
         outputs = model.generate(**generate_kwargs)
         text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
-        print('generated text', text)
         text = get_string_between(text, "```", "```") if '```' in text else text
         yield text
 
