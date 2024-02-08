@@ -64,11 +64,11 @@ answer = gr.Interface(
 
 
 
-app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen, answer],
+gr_app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen, answer],
                          ["code_completion", "code_generation", "code_explaining",
                           "error_explaining", "contract_generation",
                           "solidity_answer"])
 
 if __name__ == "__main__":
-    app.queue(5).launch(share=True, root_path="/ai-tools")
+    gr_app.queue(5).launch(share=True, root_path="/ai-tools", show_api=False)
     # app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))
