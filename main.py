@@ -4,9 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = ["remix.beta.ethereum.org",
-            "remix.alpha.ethereum.org",
-            "remix.ethereum.org",
+origins = ["https://remix.beta.ethereum.org",
+            "https://remix.alpha.ethereum.org",
+            "https://remix.ethereum.org",
             "http://localhost:7861",
             "http://127.0.0.1:7861"
         ]
