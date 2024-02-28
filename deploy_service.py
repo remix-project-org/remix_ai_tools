@@ -12,6 +12,7 @@ codecomp = gr.Interface(
     outputs=["text"],
     title="Code Completion",
     api_name="code_completion",
+    concurrency_limit=7,
 )
 
 codegen = gr.Interface(
