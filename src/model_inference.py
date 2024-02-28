@@ -46,7 +46,7 @@ def run_code_completion(
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
         stop = stopping_criteria(tokenizer, device, completion=True)
         
-        print('INFO - Code Completion: model input:', prompt)
+        print('INFO - Code Completion')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
 
         streamer = TextIteratorStreamer(tokenizer,
@@ -97,7 +97,7 @@ def run_code_generation(
         prompt = get_cogen_prompt(gen_comment)
         stop = stopping_criteria(tokenizer, device, completion=False)
         
-        print('INFO - Code Generation: model input:', prompt)
+        print('INFO - Code Generation')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
 
         streamer = TextIteratorStreamer(tokenizer,
@@ -146,7 +146,7 @@ def run_code_explaining(
     try:
         prompt = get_codexplain_prompt(code)
         
-        print('INFO - Code Explaining: model input:', prompt)
+        print('INFO - Code Explaining')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
 
         streamer = TextIteratorStreamer(tokenizer,
@@ -193,7 +193,7 @@ def run_err_explaining(
     try:
         prompt = get_errexplain_prompt(error_or_warning)
         
-        print('INFO - Error Explaining: model input:', prompt)
+        print('INFO - Error Explaining:')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
 
         streamer = TextIteratorStreamer(tokenizer,
@@ -239,7 +239,7 @@ def run_contract_generation(
     try:
         prompt = get_contractgen_prompt(contract_description)
         
-        print('INFO - Error Explaining: model input:', prompt)
+        print('INFO - Error Explaining')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
         stop = stopping_criteria(tokenizer, device, completion=False)
 
@@ -288,7 +288,7 @@ def run_answering(
     try:
         prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
-        print('INFO - Solidity answering: model input:', prompt)
+        print('INFO - Solidity answering')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
 
         streamer = TextIteratorStreamer(tokenizer,
