@@ -32,7 +32,6 @@ def run_code_completion(
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            num_beams=1,
         )
 
         
