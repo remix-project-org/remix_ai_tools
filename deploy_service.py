@@ -2,6 +2,7 @@ import gradio as gr
 import os
 from dotenv import load_dotenv
 from src.model_inference_cpp import *
+import gunicorn
 
 load_dotenv()
 
@@ -70,6 +71,8 @@ gr_app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen, 
                           "error_explaining", "contract_generation",
                           "solidity_answer"])
 
-if __name__ == "__main__":
+def app():
     gr_app.queue(max_size=100, default_concurrency_limit=7).launch(share=True, root_path="/ai-tools", max_threads=50, show_api=False)
     # app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))
+
+gunicorn(workers=1, ip="0.0.0.0", port=7861, app=app)
