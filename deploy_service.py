@@ -1,7 +1,7 @@
 import gradio as gr
 import os
 from dotenv import load_dotenv
-from src.model_inference import *
+from src.model_inference_cpp import *
 
 load_dotenv()
 
