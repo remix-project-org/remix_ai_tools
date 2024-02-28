@@ -8,7 +8,7 @@ from llama_cpp import Llama
 model = Llama(
   model_path="../codellama-13b-instruct.Q4_K_M.gguf", 
   n_threads=8,           
-  n_gpu_layers=35,
+  n_gpu_layers=-1,
   verbose=True
 )
 
@@ -27,7 +27,7 @@ def run_code_completion(
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
         print('got promt', prompt)
         generate_kwargs = dict(
-            context_code,
+            prompt=prompt,
             max_new_tokens=max_new_tokens,
             do_sample=True,
             top_p=top_p,
