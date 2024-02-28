@@ -6,8 +6,8 @@ from typing import Iterator
 from llama_cpp import Llama
 
 model = Llama(
-  model_path="../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
-  n_threads=8,           
+  model_path="../mistral-7b-instruct-v0.2-code-ft.Q2_K.gguf", 
+  n_threads=16,           
   n_gpu_layers=-1,
   verbose=True
 )
