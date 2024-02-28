@@ -25,7 +25,7 @@ def run_code_completion(
     
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
-        
+        print('got promt', prompt)
         generate_kwargs = dict(
             context_code,
             max_new_tokens=max_new_tokens,
@@ -39,6 +39,7 @@ def run_code_completion(
         
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        print('returned text:', text)
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
