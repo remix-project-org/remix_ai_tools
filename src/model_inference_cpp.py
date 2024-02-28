@@ -28,7 +28,7 @@ def run_code_completion(
         print('got promt', prompt)
         generate_kwargs = dict(
             prompt=prompt,
-            max_new_tokens=max_new_tokens,
+            max_tokens=max_new_tokens,
             do_sample=True,
             top_p=top_p,
             top_k=top_k,
