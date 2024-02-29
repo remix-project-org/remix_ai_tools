@@ -112,7 +112,6 @@ def run_err_explaining(
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
-            do_sample=True,
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
