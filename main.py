@@ -9,7 +9,7 @@ app = FastAPI()
 def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
-@app.get("/ai/api/code_completion")
+@app.post("/ai/api/code_completion")
 async def code_completion(context_code: str,
     comment: str,
     stream_result: bool=True,
