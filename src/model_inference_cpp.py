@@ -12,8 +12,6 @@ model = Llama(
   verbose=True
 )
 
-
-
 def run_code_completion(
     context_code: str,
     comment: str,

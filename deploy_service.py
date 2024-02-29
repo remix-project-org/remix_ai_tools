@@ -71,5 +71,5 @@ gr_app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen, 
                           "error_explaining", "contract_generation",
                           "solidity_answer"])
 
-gr_app.queue(max_size=100, default_concurrency_limit=1)#.launch(share=True, root_path="/ai-tools", max_threads=50, show_api=False)
+gr_app.queue(max_size=1, default_concurrency_limit=1)#.launch(share=True, root_path="/ai-tools", max_threads=50, show_api=False)
 # app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))
