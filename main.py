@@ -17,8 +17,6 @@ async def code_completion(context_code: str=Body(),
     temperature: float = 0.1,
     top_p: float = 0.9,
     top_k: int = 50):
-    print('INFO - Code Completion:', context_code)
-    print('INFO - Code Completion:', comment)
     return run_code_completion(context_code, comment, stream_result, max_new_tokens, temperature, top_p, top_k)
 
 #app = gr.mount_gradio_app(app, gr_app, path="/ai")
