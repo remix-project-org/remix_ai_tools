@@ -53,7 +53,7 @@ def run_code_generation(
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
-            prompt,
+            prompt=prompt,
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
@@ -62,7 +62,6 @@ def run_code_generation(
 
         outputs = model.generate(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        print('INFO - Code Generation', text)
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
     except Exception as ex:
@@ -83,7 +82,7 @@ def run_code_explaining(
         
         print('INFO - Code Explaining')
         generate_kwargs = dict(
-            prompt,
+            prompt=prompt,
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
@@ -111,7 +110,7 @@ def run_err_explaining(
         
         print('INFO - Error Explaining', prompt)
         generate_kwargs = dict(
-            prompt,
+            prompt=prompt,
             max_tokens=max_new_tokens,
             do_sample=True,
             top_p=top_p,
@@ -139,7 +138,7 @@ def run_contract_generation(
         
         print('INFO - Error Explaining', prompt)
         generate_kwargs = dict(
-            prompt,
+            prompt=prompt,
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
@@ -167,7 +166,7 @@ def run_answering(
         
         print('INFO - Solidity answering', prompt)
         generate_kwargs = dict(
-            prompt,
+            prompt=prompt,
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
