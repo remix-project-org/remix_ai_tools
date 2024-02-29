@@ -28,6 +28,7 @@ async def code_completion(context_code: str=Body(),
 
 @app.post("/ai/api/code_generation")
 async def code_generation(context_code:str=Body(),
+    comment: str= Body(),
     stream_result: bool=True,
     max_new_tokens: int = 1000,
     temperature: float = 0.1,
