@@ -23,6 +23,6 @@ async def code_completion(context_code: str=Body(),
     res = run_code_completion(context_code, comment, stream_result, max_new_tokens, temperature, top_p, top_k)
     end = time()
     m_times.append(end-start)
-    print(str(os.getpid()) + "Average Response time:", sum(m_times)/len(m_times))
+    print(str(os.getpid()) + " - Average Response time:", sum(m_times)/len(m_times))
     return res
 #app = gr.mount_gradio_app(app, gr_app, path="/ai")
