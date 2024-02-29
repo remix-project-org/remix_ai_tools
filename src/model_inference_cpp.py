@@ -9,8 +9,9 @@ model = Llama(
   model_path="../mistral-7b-instruct-v0.2-code-ft.Q2_K.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
-  verbose=True
+  verbose=False
 )
+
 
 def run_code_completion(
     context_code: str,
