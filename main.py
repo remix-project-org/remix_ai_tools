@@ -10,7 +10,7 @@ def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 @app.post("/ai/api/code_completion")
-def code_completion(context_code: str=Body(),
+async def code_completion(context_code: str=Body(),
     comment: str= Body(),
     stream_result: bool=True,
     max_new_tokens: int = 10,
