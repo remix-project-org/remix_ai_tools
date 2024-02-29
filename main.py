@@ -10,8 +10,8 @@ def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 @app.post("/ai/api/code_completion")
-async def code_completion(context_code: str=Query('context_code'),
-    comment: str= Query('comment'),
+async def code_completion(context_code: str=Query(),
+    comment: str= Query(),
     stream_result: bool=True,
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
