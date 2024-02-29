@@ -13,7 +13,7 @@ def read_main():
 async def code_completion(context_code: str=Body(),
     comment: str= Body(),
     stream_result: bool=True,
-    max_new_tokens: int = 1024,
+    max_new_tokens: int = 10,
     temperature: float = 0.1,
     top_p: float = 0.9,
     top_k: int = 50):
