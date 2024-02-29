@@ -1,9 +1,10 @@
 from exceptiongroup import catch
 from src.prompts import *
 from src.llm_output_parser import get_string_between, stopping_criteria
-import torch
+import torch, os
 from threading import Thread
 from typing import Iterator
+from time import time
 from transformers import BitsAndBytesConfig, AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer, StoppingCriteriaList
 device = "cuda:0" if torch.cuda.is_available() else 'cpu'
 
@@ -14,6 +15,8 @@ bnb_4bit_use_double_quant=True,
 bnb_4bit_quant_type="nf4",
 bnb_4bit_compute_dtype=torch.bfloat16
 )
+
+m_times = []
 
 if torch.cuda.is_available():
     config = AutoConfig.from_pretrained(model_id)
@@ -45,7 +48,7 @@ def run_code_completion(
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
         stop = stopping_criteria(tokenizer, device, completion=True)
-        
+        start = time()
         print('INFO - Code Completion')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
 
@@ -78,6 +81,10 @@ def run_code_completion(
             outputs = model.generate(**generate_kwargs)
             text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
             text = get_string_between(text, "```", "```") if '```' in text else text
+            end = time()
+            m_times.append(end-start)
+            print(str(os.getpid()) + " - Average Response time:", sum(m_times)/len(m_times))
+    
             yield text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
