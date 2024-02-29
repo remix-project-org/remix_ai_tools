@@ -6,7 +6,7 @@ from typing import Iterator
 from llama_cpp import Llama
 
 model = Llama(
-  model_path="../mistral-7b-instruct-v0.2-code-ft.Q2_K.gguf", 
+  model_path="../codellama-13b-instruct.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
   verbose=False
@@ -52,41 +52,20 @@ def run_code_generation(
 
     try:
         prompt = get_cogen_prompt(gen_comment)
-        stop = stopping_criteria(tokenizer, device, completion=False)
         
-        print('INFO - Code Generation: model input:', prompt)
-        inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
-
-        streamer = TextIteratorStreamer(tokenizer,
-                                        timeout=10.,
-                                        skip_prompt=True,
-                                        skip_special_tokens=True)
+        print('INFO - Code Generation')
         generate_kwargs = dict(
-            inputs,
-            streamer=streamer if stream_result else None,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
+            prompt,
+            max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
-            temperature=temperature,
-            num_beams=1,
-            pad_token_id=tokenizer.eos_token_id,
-            stopping_criteria=[stop],
+            temperature=temperature
         )
 
-        if stream_result: 
-            t = Thread(target=model.generate, kwargs=generate_kwargs)
-            t.start()
-
-            outputs = []
-            for text in streamer:
-                outputs.append(text)
-                yield ''.join(outputs)
-        else: 
-            outputs = model.generate(**generate_kwargs)
-            text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
-            text = get_string_between(text, "```", "```") if '```' in text else text
-            yield text
+        outputs = model.generate(**generate_kwargs)
+        text = outputs["choices"][0]["text"].strip()
+        text = get_string_between(text, "```", "```") if '```' in text else text
+        return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
         return "Server error"
@@ -103,38 +82,19 @@ def run_code_explaining(
     try:
         prompt = get_codexplain_prompt(code)
         
-        print('INFO - Code Explaining: model input:', prompt)
-        inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
-
-        streamer = TextIteratorStreamer(tokenizer,
-                                        timeout=10.,
-                                        skip_prompt=True,
-                                        skip_special_tokens=True)
+        print('INFO - Code Explaining')
         generate_kwargs = dict(
-            inputs,
-            streamer=streamer if stream_result else None,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
+            prompt,
+            max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
-            temperature=temperature,
-            num_beams=1,
-            pad_token_id=tokenizer.eos_token_id,
+            temperature=temperature
         )
 
-        if stream_result: 
-            t = Thread(target=model.generate, kwargs=generate_kwargs)
-            t.start()
-
-            outputs = []
-            for text in streamer:
-                outputs.append(text)
-                yield ''.join(outputs)
-        else: 
-            outputs = model.generate(**generate_kwargs)
-            text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
-            text = get_string_between(text, "```", "```") if '```' in text else text
-            yield text
+        outputs = model.generate(**generate_kwargs)
+        text = outputs["choices"][0]["text"].strip()
+        text = get_string_between(text, "```", "```") if '```' in text else text
+        return text
     except Exception as ex:
         print('ERROR - Code explaining', ex)
         return "Server error"
@@ -150,37 +110,19 @@ def run_err_explaining(
     try:
         prompt = get_errexplain_prompt(error_or_warning)
         
-        print('INFO - Error Explaining: model input:', prompt)
-        inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
-
-        streamer = TextIteratorStreamer(tokenizer,
-                                        timeout=10.,
-                                        skip_prompt=True,
-                                        skip_special_tokens=True)
+        print('INFO - Error Explaining', prompt)
         generate_kwargs = dict(
-            inputs,
-            streamer=streamer if stream_result else None,
-            max_new_tokens=max_new_tokens,
+            prompt,
+            max_tokens=max_new_tokens,
             do_sample=True,
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            num_beams=1,
-            pad_token_id=tokenizer.eos_token_id,
         )
 
-        if stream_result: 
-            t = Thread(target=model.generate, kwargs=generate_kwargs)
-            t.start()
-
-            outputs = []
-            for text in streamer:
-                outputs.append(text)
-                yield ''.join(outputs)
-        else: 
-            outputs = model.generate(**generate_kwargs)
-            text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
-            yield text
+        outputs = model.generate(**generate_kwargs)
+        text = outputs["choices"][0]["text"].strip()
+        return text
     except Exception as ex:
         print('ERROR - Error Explaining', ex)
         return "Server error"
@@ -196,40 +138,19 @@ def run_contract_generation(
     try:
         prompt = get_contractgen_prompt(contract_description)
         
-        print('INFO - Error Explaining: model input:', prompt)
-        inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
-        stop = stopping_criteria(tokenizer, device, completion=False)
-
-        streamer = TextIteratorStreamer(tokenizer,
-                                        timeout=10.,
-                                        skip_prompt=True,
-                                        skip_special_tokens=True)
+        print('INFO - Error Explaining', prompt)
         generate_kwargs = dict(
-            inputs,
-            streamer=streamer if stream_result else None,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
+            prompt,
+            max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            num_beams=1,
-            stopping_criteria=[stop],
-            pad_token_id=tokenizer.eos_token_id,
         )
 
-        if stream_result: 
-            t = Thread(target=model.generate, kwargs=generate_kwargs)
-            t.start()
-
-            outputs = []
-            for text in streamer:
-                outputs.append(text)
-                yield ''.join(outputs)
-        else: 
-            outputs = model.generate(**generate_kwargs)
-            text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
-            text = get_string_between(text, "```", "```") if '```' in text else text
-            yield text
+        outputs = model.generate(**generate_kwargs)
+        text = outputs["choices"][0]["text"].strip()
+        text = get_string_between(text, "```", "```") if '```' in text else text
+        return text
     except Exception as ex:
         print('ERROR - Contract Generation', ex)
         return "Server error"
@@ -245,37 +166,18 @@ def run_answering(
     try:
         prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
-        print('INFO - Solidity answering: model input:', prompt)
-        inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
-
-        streamer = TextIteratorStreamer(tokenizer,
-                                        timeout=10.,
-                                        skip_prompt=True,
-                                        skip_special_tokens=True)
+        print('INFO - Solidity answering', prompt)
         generate_kwargs = dict(
-            inputs,
-            streamer=streamer if stream_result else None,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
+            prompt,
+            max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            num_beams=1,
-            pad_token_id=tokenizer.eos_token_id,
         )
 
-        if stream_result: 
-            t = Thread(target=model.generate, kwargs=generate_kwargs)
-            t.start()
-
-            outputs = []
-            for text in streamer:
-                outputs.append(text)
-                yield ''.join(outputs)
-        else: 
-            outputs = model.generate(**generate_kwargs)
-            text = tokenizer.batch_decode(outputs[:, inputs['input_ids'].shape[1]:], skip_special_tokens=True)[0]
-            yield text
+        outputs = model.generate(**generate_kwargs)
+        text = get_string_between(text, "```", "```") if '```' in text else text
+        return text
     except Exception as ex:
         print('ERROR - Question Answering', ex)
         return "Server error"
