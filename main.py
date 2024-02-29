@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 #from deploy_service import gr, gr_app
 from src.model_inference_cpp import *
 
@@ -10,8 +10,8 @@ def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 @app.post("/ai/api/code_completion")
-async def code_completion(context_code: str,
-    comment: str,
+async def code_completion(context_code: str=Query('context_code'),
+    comment: str= Query('comment'),
     stream_result: bool=True,
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
