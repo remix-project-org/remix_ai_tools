@@ -31,8 +31,6 @@ def run_code_completion(
             top_k=top_k,
             temperature=temperature,
         )
-
-        
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
@@ -64,6 +62,7 @@ def run_code_generation(
 
         outputs = model.generate(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        print('INFO - Code Generation', text)
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
     except Exception as ex:
