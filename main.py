@@ -21,7 +21,7 @@ async def code_completion(payload=Body(),
     res = run_code_completion(payload["context_code"], payload["comment"], stream_result, payload["max_new_tokens"], temperature, top_p, top_k)
     end = time()
     m_times.append(end-start)
-    print(str(os.getpid()) + " - Average Response time:", sum(m_times)/len(m_times))
+    print(str(os.getpid()) + " - Response time:", end-start)
     return res
 
 @app.post("/ai/api/code_generation")
