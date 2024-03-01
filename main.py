@@ -1,10 +1,11 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 from fastapi import FastAPI, Body
 #from deploy_service import gr, gr_app
 from src.model_inference_cpp import *
 from time import time
-import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 print("CUDA_VISIBLE_DEVICES:", os.environ["CUDA_VISIBLE_DEVICES"])
 
 m_times = []
