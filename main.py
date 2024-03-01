@@ -4,6 +4,8 @@ from src.model_inference_cpp import *
 from time import time
 import os
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 m_times = []
 app = FastAPI()
 

@@ -18,3 +18,4 @@ bitsandbytes==0.42.0
 gradio
 python-dotenv
 gunicorn
+hf_transfer
