@@ -1,5 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 from fastapi import FastAPI, Body
 #from deploy_service import gr, gr_app
