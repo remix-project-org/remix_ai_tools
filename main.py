@@ -5,6 +5,7 @@ from time import time
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+print("CUDA_VISIBLE_DEVICES:", os.environ["CUDA_VISIBLE_DEVICES"])
 
 m_times = []
 app = FastAPI()
