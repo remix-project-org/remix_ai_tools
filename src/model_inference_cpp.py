@@ -108,7 +108,7 @@ def run_err_explaining(
     try:
         prompt = get_errexplain_prompt(error_or_warning)
         
-        print('INFO - Error Explaining', prompt)
+        print('INFO - Error Explaining')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -135,7 +135,7 @@ def run_contract_generation(
     try:
         prompt = get_contractgen_prompt(contract_description)
         
-        print('INFO - Error Explaining', prompt)
+        print('INFO - Error Explaining')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -163,7 +163,7 @@ def run_answering(
     try:
         prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
-        print('INFO - Solidity answering', prompt)
+        print('INFO - Solidity answering')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
