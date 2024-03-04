@@ -30,7 +30,6 @@ def run_code_completion(
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            stop=[" \n", "<|endoftext|>", "</s>", "\t", "  "]
         )
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
@@ -50,7 +49,7 @@ def run_code_generation(
     top_k: int = 50) -> Iterator[str]:
 
     try:
-        prompt = gen_comment #get_cogen_prompt(gen_comment)
+        prompt = get_cogen_prompt(gen_comment)
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
@@ -59,13 +58,12 @@ def run_code_generation(
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            stop=[" }\n"]
         )
 
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
-        return text + " }\n"
+        return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
         return "Server error"
