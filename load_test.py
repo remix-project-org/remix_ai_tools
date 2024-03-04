@@ -6,7 +6,7 @@ import json
 
 url = "https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/"
 class QuickstartUser(HttpUser):
-    wait_time = between(max_wait=10, min_wait=5)
+    wait_time = between(max_wait=30, min_wait=20)
     host = ""
 
     # @task
@@ -35,30 +35,30 @@ class QuickstartUser(HttpUser):
         ]})
 
 
-    @task
-    def test_error_explaining(self):
-        self.client.post( url + "error_explaining", 
-        json={"data":[
-            "ParserError: Expected pragma, import directive or contract/interface/library/struct/enum/constant/function/error definition.--> contracts/1_Storage.sol:42:5:",
-            False, 200, 0.1, 0.9, 50
-        ]})
+    # @task
+    # def test_error_explaining(self):
+    #     self.client.post( url + "error_explaining", 
+    #     json={"data":[
+    #         "ParserError: Expected pragma, import directive or contract/interface/library/struct/enum/constant/function/error definition.--> contracts/1_Storage.sol:42:5:",
+    #         False, 200, 0.1, 0.9, 50
+    #     ]})
 
 
-    @task
-    def test_contract_generation(self):
-        self.client.post( url + "contract_generation", 
-        json={"data":[
-            "Write a contract for a simple storage",
-            False, 2000, 0.1, 0.9, 50
-        ]})
+    # @task
+    # def test_contract_generation(self):
+    #     self.client.post( url + "contract_generation", 
+    #     json={"data":[
+    #         "Write a contract for a simple storage",
+    #         False, 2000, 0.1, 0.9, 50
+    #     ]})
 
-    @task
-    def test_answering(self):
-        self.client.post( url + "answering", 
-        json={"data":[
-            "What is the purpose of the storage contract?",
-            False, 2000, 0.1, 0.9, 50
-        ]})
+    # @task
+    # def test_answering(self):
+    #     self.client.post( url + "answering", 
+    #     json={"data":[
+    #         "What is the purpose of the storage contract?",
+    #         False, 2000, 0.1, 0.9, 50
+    #     ]})
 
         
 x = requests.post("https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/code_completion", 
@@ -66,7 +66,7 @@ x = requests.post("https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/code_comp
             "// SPDX-License-Identifier: GPL-3.0\n pragma solidity",
             "",
             False,
-            10,
+            20,
             1,
             0.9,
             50

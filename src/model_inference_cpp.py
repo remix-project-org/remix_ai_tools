@@ -135,7 +135,7 @@ def run_contract_generation(
     try:
         prompt = get_contractgen_prompt(contract_description)
         
-        print('INFO - Error Explaining')
+        print('INFO - Contract Explaining')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
