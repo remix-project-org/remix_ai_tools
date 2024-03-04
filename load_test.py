@@ -52,24 +52,19 @@ class QuickstartUser(HttpUser):
     #         False, 2000, 0.1, 0.9, 50
     #     ]})
 
-    # @task
-    # def test_answering(self):
-    #     self.client.post( url + "answering", 
-    #     json={"data":[
-    #         "What is the purpose of the storage contract?",
-    #         False, 2000, 0.1, 0.9, 50
-    #     ]})
+    @task
+    def test_answering(self):
+        self.client.post( url + "solidity_answer", 
+        json={"data":[
+            "What is the purpose of the storage contract?",
+            False, 2000, 0.1, 0.9, 50
+        ]})
 
         
-x = requests.post("https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/code_completion", 
-        json={  "data":[# convert dictionary to string
-            "// SPDX-License-Identifier: GPL-3.0\n pragma solidity",
-            "",
-            False,
-            20,
-            1,
-            0.9,
-            50
-        ]
-        }, headers={"Content-Type": "application/json"})
+x = requests.post(url + "solidity_answer", 
+        json={"data":[
+            "What is the purpose of the storage contract?",
+            False, 2000, 0.1, 0.9, 50
+        ]},
+        headers={"Content-Type": "application/json"})
 print("test req: ", x.text)
