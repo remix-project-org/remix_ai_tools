@@ -13,21 +13,21 @@ def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 @app.post("/ai/api/code_completion")
-async def code_completion(payload=Body(),
+async def code_completion(context_code: str, comment: str,
     stream_result: bool=True,
     temperature: float = 0.1,
     top_p: float = 0.9,
     top_k: int = 50):
     start = time()
-    res = run_code_completion(payload["context_code"], payload["comment"], stream_result, payload["max_new_tokens"], temperature, top_p, top_k)
+    res = run_code_completion(context_code, comment, stream_result, payload["max_new_tokens"], temperature, top_p, top_k)
     end = time()
     m_times.append(end-start)
     print(str(os.getpid()) + " - Response time:", end-start)
     return res
 
 @app.post("/ai/api/code_generation")
-async def code_generation(context_code:str=Body(),
-    stream_result: bool=True,
+async def code_generation(context_code:str,
+    stream_result: bool=False,
     max_new_tokens: int = 1000,
     temperature: float = 0.1,
     top_p: float = 0.9,
@@ -40,8 +40,8 @@ async def code_generation(context_code:str=Body(),
     return res
 
 @app.post("/ai/api/code_explaining")
-async def code_explaining(context_code: str=Body(),
-    stream_result: bool=True,
+async def code_explaining(context_code: str,
+    stream_result: bool=False,
     max_new_tokens: int = 2000,
     temperature: float = 0.1,
     top_p: float = 0.9,
@@ -54,8 +54,8 @@ async def code_explaining(context_code: str=Body(),
     return res
 
 @app.post("/ai/api/error_explaining")
-async def error_explaining(err: str=Body(),
-    stream_result: bool=True,
+async def error_explaining(err: str,
+    stream_result: bool=False,
     max_new_tokens: int = 10,
     temperature: float = 0.1,
     top_p: float = 0.9,
@@ -69,7 +69,7 @@ async def error_explaining(err: str=Body(),
 
 
 @app.post("/ai/api/contract_generation")
-async def contract_generation(desc: str=Body(),
+async def contract_generation(desc: str,
     stream_result: bool=True,
     max_new_tokens: int = 2000,
     temperature: float = 0.1,
@@ -83,7 +83,7 @@ async def contract_generation(desc: str=Body(),
     return res
 
 @app.post("/ai/api/answering")
-async def answering(question: str=Body(),
+async def answering(question: str,
     stream_result: bool=True,
     max_new_tokens: int = 2000,
     temperature: float = 0.1,
