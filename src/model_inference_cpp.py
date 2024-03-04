@@ -32,7 +32,7 @@ def run_code_completion(
             temperature=temperature,
         )
         outputs = model(**generate_kwargs)
-        text = outputs["choices"][0]["text"]#.strip()
+        text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
