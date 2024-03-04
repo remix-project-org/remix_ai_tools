@@ -6,7 +6,7 @@ import json
 
 url = "https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/"
 class QuickstartUser(HttpUser):
-    wait_time = between(max_wait=30, min_wait=20)
+    wait_time = between(min_wait=20, max_wait=30)
     host = ""
 
     # @task

@@ -49,7 +49,7 @@ def run_code_generation(
     top_k: int = 50) -> Iterator[str]:
 
     try:
-        prompt = gen_comment #get_cogen_prompt(gen_comment)
+        prompt = get_cogen_prompt(gen_comment)
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
