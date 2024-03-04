@@ -49,7 +49,7 @@ def run_code_generation(
     top_k: int = 50) -> Iterator[str]:
 
     try:
-        prompt = get_cogen_prompt(gen_comment)
+        prompt = gen_comment #get_cogen_prompt(gen_comment)
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
@@ -57,7 +57,7 @@ def run_code_generation(
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
-            temperature=temperature
+            temperature=temperature,
         )
 
         outputs = model(**generate_kwargs)
