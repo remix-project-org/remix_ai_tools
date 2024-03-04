@@ -5,8 +5,6 @@ from fastapi import FastAPI, Body
 from src.model_inference_cpp import *
 from time import time
 
-print("CUDA_VISIBLE_DEVICES:", os.environ["CUDA_VISIBLE_DEVICES"])
-
 m_times = []
 app = FastAPI()
 
