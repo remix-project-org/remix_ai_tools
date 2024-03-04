@@ -59,7 +59,7 @@ def run_code_generation(
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            stop=["}\n"]
+            stop=["\n"]
         )
 
         outputs = model(**generate_kwargs)
