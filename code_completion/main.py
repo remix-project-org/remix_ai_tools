@@ -6,11 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 @app.get("/")
-def read_main():
+async def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 @app.post("/ai/api/code_completion")
-def code_completion(data: dict):
+async def code_completion(data: dict):
     context_code = data["data"][0]
     comment = data["data"][1]
     stream_result = data["data"][2]
@@ -21,7 +21,7 @@ def code_completion(data: dict):
     return run_code_completion(context_code, comment, stream_result, max_new_tokens, temperature, top_p, top_k)
 
 @app.post("/ai/api/code_generation")
-def code_generation(data: dict):
+async def code_generation(data: dict):
     gen_comment = data["data"][0]
     stream_result = data["data"][1]
     max_new_tokens = data["data"][2]
