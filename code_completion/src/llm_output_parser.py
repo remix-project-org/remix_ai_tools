@@ -37,7 +37,7 @@ class StopOnTokens(StoppingCriteria):
 class StopOnTokensNL(StoppingCriteria):
     def __init__(self, tokenizer):
         super().__init__()
-        self.stop_word = '\n'
+        self.stop_word = ['\n', ';']
         self.old_input_ids = None
         self.tokenizer = tokenizer
         self.n_tokens = 0
@@ -53,6 +53,7 @@ class StopOnTokensNL(StoppingCriteria):
         new_token_word = self.tokenizer.decode(input_ids[len(self.old_input_ids):])
         self.old_input_ids = input_ids
 
-        if self.stop_word in new_token_word and self.n_tokens >=3: # avoid stopping on the first character as it is a new line
-            return True
+        for sw in self.stop_word:
+            if sw in new_token_word and self.n_tokens >=3: # avoid stopping on the first character as it is a new line
+                return True
         return False
