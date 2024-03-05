@@ -23,7 +23,8 @@ async def run_code_completion(
     top_k: int = 50) -> Iterator[str]:
     
     try:
-        prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
+        # prompt = context_code 
+        prompt = get_cocom_prompt(message=comment, is_model_deep_seek=use_deep_seek)
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(model.tokenizer())])
 
         generate_kwargs = dict(
