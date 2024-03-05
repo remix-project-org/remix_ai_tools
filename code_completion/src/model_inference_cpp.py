@@ -1,5 +1,5 @@
-from code_completion.src.prompts import *
-from code_completion.src.llm_output_parser import StopOnTokens, StopOnTokensNL
+from src.prompts import *
+from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 

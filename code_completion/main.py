@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from code_completion.deploy_service import gr, gr_app
+from deploy_service import gr, gr_app
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
