@@ -3,10 +3,10 @@ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 
-use_deep_seek = False
+use_deep_seek = True
 model = Llama(
-  #model_path="../deepseek-coder-1.3b-instruct.Q4_K_M.gguf", 
-  model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
+  model_path="../deepseek-coder-1.3b-instruct.Q4_K_M.gguf", 
+  #model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
   verbose=True
@@ -52,7 +52,7 @@ async def run_code_generation(
     top_k: int = 50) -> Iterator[str]:
 
     try:
-        prompt = get_cogen_prompt(gen_comment)
+        prompt = get_cogen_prompt(gen_comment, is_model_deep_seek=use_deep_seek)
         stopping_criteria = StoppingCriteriaList([StopOnTokens(model.tokenizer())])
         
         print('INFO - Code Generation')
