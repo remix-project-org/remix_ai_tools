@@ -40,7 +40,7 @@ class StopOnTokensNL(StoppingCriteria):
         self.stop_word = '\n'
         self.old_input_ids = None
         self.tokenizer = tokenizer
-        self.n_tokens
+        self.n_tokens = 0
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor):
         self.n_tokens += 1
