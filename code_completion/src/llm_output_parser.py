@@ -21,7 +21,6 @@ class StopOnTokens(StoppingCriteria):
         
         new_token_word = self.tokenizer.decode(input_ids[len(self.old_input_ids):])
         self.old_input_ids = input_ids
-        print("new token word", new_token_word)
 
         if self.incode_words in new_token_word:
             self.in_code += 1
