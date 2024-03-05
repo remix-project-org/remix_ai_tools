@@ -13,7 +13,7 @@ model = Llama(
 )
 
 
-def run_code_completion(
+async def run_code_completion(
     context_code: str,
     comment: str,
     stream_result: bool=True,
@@ -43,7 +43,7 @@ def run_code_completion(
 
 
 
-def run_code_generation(
+async def run_code_generation(
     gen_comment: str,
     stream_result: bool=True,
     max_new_tokens: int = 1024,
