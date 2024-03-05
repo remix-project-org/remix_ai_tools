@@ -3,7 +3,7 @@ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 
-use_deep_seek = True
+use_deep_seek = False
 model = Llama(
   #model_path="../deepseek-coder-1.3b-instruct.Q4_K_M.gguf", 
   model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
