@@ -24,7 +24,6 @@ async def run_code_completion(
     
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
-        stopping_criteria = StoppingCriteriaList([StopOnTokensNL(model.tokenizer())])
 
         generate_kwargs = dict(
             prompt=prompt,
@@ -32,7 +31,7 @@ async def run_code_completion(
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            stopping_criteria=stopping_criteria
+            #stopping_criteria=stopping_criteria
         )
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
