@@ -5,7 +5,7 @@ from llama_cpp import Llama, StoppingCriteriaList
 
 use_deep_seek = True
 model = Llama(
-  model_path="../deepseek-coder-1.3b-instruct.Q4_K_M.gguf", 
+  model_path="../../deepseek-coder-1.3b-instruct.Q4_K_M.gguf", 
   #model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
