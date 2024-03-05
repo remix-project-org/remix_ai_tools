@@ -53,6 +53,6 @@ class StopOnTokensNL(StoppingCriteria):
         new_token_word = self.tokenizer.decode(input_ids[len(self.old_input_ids):])
         self.old_input_ids = input_ids
 
-        if self.incode_words in new_token_word and self.n_tokens >=3: # avoid stopping on the first character as it is a new line
+        if self.stop_word in new_token_word and self.n_tokens >=3: # avoid stopping on the first character as it is a new line
             return True
         return False
