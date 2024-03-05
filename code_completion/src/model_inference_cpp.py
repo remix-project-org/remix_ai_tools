@@ -68,6 +68,7 @@ async def run_code_generation(
 
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        text = text.replace("```solidity \n", "").replace("```", "")
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
