@@ -24,11 +24,9 @@ class StopOnTokens(StoppingCriteria):
 
         if self.incode_words in new_token_word:
             self.in_code += 1
-            print("in code", self.in_code)
 
         if self.stop_word in new_token_word:
             self.in_code -= 1
-            print("out of code", self.in_code)
             return True if self.in_code == 0 else False
         return False
     
