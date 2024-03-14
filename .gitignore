@@ -3,3 +3,6 @@ flagged
 src/__pycache__/
 .env
 __pycache__/
+experiments/*.html
+experiments/*.gguf
+experiments/__pycache__/
