@@ -3,3 +3,4 @@ flagged
 src/__pycache__/
 .env
 __pycache__/
+**/**.gguf
