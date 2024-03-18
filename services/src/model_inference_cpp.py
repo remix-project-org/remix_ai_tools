@@ -63,8 +63,11 @@ def run_code_generation(
         )
 
         outputs = model(**generate_kwargs)
+        print('OUTPUTS before', outputs)
         text = outputs["choices"][0]["text"].strip()
+        print('OUTPUTS after', text)
         text = get_string_between(text, "```", "```") if '```' in text else text
+        print('OUTPUTS', text)
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
