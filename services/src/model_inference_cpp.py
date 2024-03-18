@@ -15,6 +15,7 @@ model = Llama(
 
 def run_code_completion(
     context_code: str,
+    comment: str,
     stream_result: bool=True,
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
