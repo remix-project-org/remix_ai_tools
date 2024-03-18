@@ -15,7 +15,6 @@ model = Llama(
 
 def run_code_completion(
     context_code: str,
-    comment: str,
     stream_result: bool=True,
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
@@ -24,12 +23,14 @@ def run_code_completion(
     
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
+        stopping_criteria = StoppingCriteriaList([StopOnTokens(model.tokenizer())])
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
+            stopping_criteria=stopping_criteria
         )
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
