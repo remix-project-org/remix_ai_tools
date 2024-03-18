@@ -1,9 +1,8 @@
 from src.prompts import *
 from src.llm_output_parser import get_string_between
-import torch
-from threading import Thread
 from typing import Iterator
-from llama_cpp import Llama
+from llama_cpp import Llama, StoppingCriteriaList
+from src.llm_output_parser import StopOnTokens
 
 model = Llama(
   model_path="../../codellama-13b-instruct.Q4_K_M.gguf", 
@@ -51,6 +50,7 @@ def run_code_generation(
 
     try:
         prompt = get_cogen_prompt(gen_comment)
+        stopping_criteria = StoppingCriteriaList([StopOnTokens(model.tokenizer())])
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
@@ -58,7 +58,8 @@ def run_code_generation(
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
-            temperature=temperature
+            temperature=temperature,
+            stopping_criteria=stopping_criteria
         )
 
         outputs = model(**generate_kwargs)
