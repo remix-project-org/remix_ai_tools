@@ -9,7 +9,8 @@ model = Llama(
   model_path="../../codellama-13b-instruct.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
-  verbose=False
+  verbose=False, 
+  n_ctx=4096,
 )
 
 
