@@ -1,7 +1,8 @@
 import gradio as gr
 import os
 from dotenv import load_dotenv
-from src.model_inference import *
+from src.model_inference_cpp import *
+import gunicorn
 
 load_dotenv()
 
@@ -12,6 +13,7 @@ codecomp = gr.Interface(
     outputs=["text"],
     title="Code Completion",
     api_name="code_completion",
+    concurrency_limit=1,
 )
 
 codegen = gr.Interface(
@@ -69,6 +71,6 @@ gr_app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen, 
                           "error_explaining", "contract_generation",
                           "solidity_answer"])
 
-if __name__ == "__main__":
-    gr_app.queue(max_size=100).launch(share=True, root_path="/ai-tools", max_threads=50, show_api=False)
-    # app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))
+gr_app.queue(max_size=1, default_concurrency_limit=1)
+#gr_app.launch(share=True, root_path="/ai-tools", max_threads=1, show_api=False)
+# app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))

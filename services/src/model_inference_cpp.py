@@ -1,8 +1,9 @@
 from src.prompts import *
-from src.llm_output_parser import *
+from src.llm_output_parser import get_string_between
 import torch
 from threading import Thread
 from typing import Iterator
+from llama_cpp import Llama
 
 model = Llama(
   model_path="../codellama-13b-instruct.Q4_K_M.gguf", 
@@ -23,15 +24,12 @@ def run_code_completion(
     
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
-        stopping_criteria = StoppingCriteriaList([StopOnTokens(model.tokenizer())])
-
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            stopping_criteria=stopping_criteria
         )
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
@@ -52,7 +50,6 @@ def run_code_generation(
 
     try:
         prompt = get_cogen_prompt(gen_comment)
-        stopping_criteria = StoppingCriteriaList([StopOnTokens(model.tokenizer())])
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
@@ -60,7 +57,7 @@ def run_code_generation(
             max_tokens=max_new_tokens,
             top_p=top_p,
             top_k=top_k,
-            temperature=temperature,
+            temperature=temperature
         )
 
         outputs = model(**generate_kwargs)
@@ -138,7 +135,7 @@ def run_contract_generation(
     try:
         prompt = get_contractgen_prompt(contract_description)
         
-        print('INFO - Contract Explaining')
+        print('INFO - Error Explaining')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
