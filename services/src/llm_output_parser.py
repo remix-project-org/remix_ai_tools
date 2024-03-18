@@ -50,6 +50,6 @@ def get_string_between(source, start_str, end_str):
     end_index = source.find(end_str, start_index)
 
     if end_index == -1:
-        return None
+        return source[0:start_index]
 
     return source[start_index:end_index]
