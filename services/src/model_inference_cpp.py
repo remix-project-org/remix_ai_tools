@@ -6,7 +6,7 @@ from typing import Iterator
 from llama_cpp import Llama
 
 model = Llama(
-  model_path="../codellama-13b-instruct.Q4_K_M.gguf", 
+  model_path="../../codellama-13b-instruct.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
   verbose=False
