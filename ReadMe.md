@@ -1,8 +1,6 @@
 # Remix AI Tools and Services
 Implements AI endpoints for the Remix-IDE
 
-## Implemented Function
-
 ### Code Completion
 This service provides the endpoint for code completion at `localhost:7860`
 
