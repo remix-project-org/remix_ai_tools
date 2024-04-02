@@ -178,7 +178,6 @@ def run_answering(
 
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        text = get_string_between(text, "```", "```") if '```' in text else text
         return text
     except Exception as ex:
         print('ERROR - Question Answering', ex)

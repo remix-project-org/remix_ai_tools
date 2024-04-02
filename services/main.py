@@ -11,5 +11,3 @@ def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 app = gr.mount_gradio_app(app, gr_app, path="/ai")
-
-app = gr.mount_gradio_app(app, gr_app, path="/ai")
