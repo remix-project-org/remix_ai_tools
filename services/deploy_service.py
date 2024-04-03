@@ -44,8 +44,8 @@ errorexp = gr.Interface(
 
 contractgen = gr.Interface(
     fn=run_contract_generation,
-    inputs=["text", "checkbox", gr.Slider(0, 2000,300), gr.Slider(0.01, 1, 0.2),
-            gr.Slider(0, 1, 0.8), gr.Slider(1, 200, 50)],
+    inputs=["text", "checkbox", gr.Slider(0, 2000,1000), gr.Slider(0.01, 1, 0.8),
+            gr.Slider(0, 1, 0.92), gr.Slider(1, 200, 30)],
     outputs=["text"],
     title="Contract Generation",
     api_name="contract_generation"
