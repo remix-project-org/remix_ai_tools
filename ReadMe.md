@@ -28,8 +28,13 @@ The folder `services` implements the services
 Run 
 ```bash
 cd services
-git fetch && git pull && gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 2 --threads 1 --timeout 600
+git fetch && git pull && MODEL=llama13b gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 2 --threads 1 --timeout 600
 ```
+Here is the list of supported models
+* llama13b
+* mistral
+* deepseek
+* stability
 
 ## Test the server load
 ```bash

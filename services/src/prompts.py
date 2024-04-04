@@ -1,3 +1,6 @@
+import os 
+print('INFO: Using Model', os.getenv("MODEL", 'llama13b'))
+
 SOLIDITY_VERSION_LATEST_SUPPORTED = "0.8.20"
 
 GENERATION_SYSTEM_PROMPT = "You only respond as Solidity AI Assistant that generates code in this format ``` ```. You provide accurate solution and always answer as helpfully as possible, while being safe."
@@ -8,44 +11,51 @@ CONTRACT_SYSTEM_PROMPT = "You respond as Solidity AI Assistant that generates sm
 ANSWERING_SYSTEM_PROMPT = "You only respond as Solidity AI Assistant that provides correct answers to user requests. You provide accurate solution and always answer as helpfully as possible, while being safe."
 
 
+model_name = os.getenv("MODEL")
+if model_name == "llama13b":
+    model_path = "../../codellama-13b-instruct.Q4_K_M.gguf"
+    prompt_builder = lambda sys, msg: f'<s>[INST] <<SYS>>\n{sys}\n<</SYS>>\n\n{msg} [/INST]'
+elif model_name == "deepseek":
+    model_path = "../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf"
+    prompt_sys = lambda sys, msg: f'{sys}\n### INSTRUCTION:\n{msg}\n### RESPONSE:\n'
+elif model_name == "mistral":
+    model_path = "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf"
+    prompt_builder = lambda sys, msg: f'<|im_start|>system\n{sys}<|im_end|>\n<|im_start|>user\n{msg}<|im_end|>\n<|im_start|>assistant"'
+elif model_name == "stability":
+    model_path = "../../stable-code-3b-q5_k_m.gguf"
+    prompt_builder = lambda sys, msg: f'<|im_start|>system\n{sys}<|im_end|>\n<|im_start|>user\n{msg}<|im_end|>\n<|im_start|>assistant"'
+else:
+    raise ValueError('Wrong model specified. The given model is not supported yet')
+
+
 def get_cocom_prompt(message: str, context: str) -> str:
-    texts = [f'<s>[INST] <<SYS>>\n{COMPLETION_SYSTEM_PROMPT}\n<</SYS>>\n\n']
+    msg = ""
     if len(context):
-        texts.append(f'Using this Solidity code context ```\n{context}\n``` ')
+        msg = f'Using this Solidity code context ```\n{context}\n``` \n'
     message = message.strip()
-    texts.append(f'{message} [/INST]')
-    return ''.join(texts)
+    msg += message
+    return prompt_builder(COMPLETION_SYSTEM_PROMPT, msg)
 
 def get_cogen_prompt(message: str) -> str:
-    texts = [f'<s>[INST] <<SYS>>\n{GENERATION_SYSTEM_PROMPT}\n<</SYS>>\n\n']
     message = message.strip()
-    texts.append(f'{message} [/INST]')
-    return ''.join(texts)
+    return prompt_builder(GENERATION_SYSTEM_PROMPT, message)
 
 def get_answer_prompt(message: str) -> str:
     message = message.split('sol-gpt')[-1]
-    texts = [f'<s>[INST] <<SYS>>\n{ANSWERING_SYSTEM_PROMPT}\n<</SYS>>\n\n']
     message = message.strip()
-    texts.append(f'{message} [/INST]')
-    return ''.join(texts)
+    return prompt_builder(ANSWERING_SYSTEM_PROMPT, message)
 
 def get_codexplain_prompt(message: str) -> str:
-    texts = [f'<s>[INST] <<SYS>>\n{EXPLAIN_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    
-    message = message.strip()
-    texts.append(f'Explain the following Solidity code:\n ```{message}``` [/INST]')
-    return ''.join(texts)
+    message = f'Explain the following Solidity code:\n ```{message.strip()}```'
+    return prompt_builder(EXPLAIN_SYSTEM_PROMPT, message)
 
 
 def get_errexplain_prompt(message: str) -> str:
-    texts = [f'<s>[INST] <<SYS>>\n{ERROR_SYSTEM_PROMPT}\n<</SYS>>\n\n']
-    
     message = message.strip()
-    texts.append(f'Explain the following Solidity error message and how to resolve it:\n ```{message}``` [/INST]')
-    return ''.join(texts)
+    message = f'Explain the following Solidity error message and how to resolve it:\n ```{message.strip()}```'
+    return prompt_builder(ERROR_SYSTEM_PROMPT, message)
 
 def get_contractgen_prompt(message: str) -> str:
-    texts = [f'<s>[INST] <<SYS>>\n{CONTRACT_SYSTEM_PROMPT}\n<</SYS>>\n\n']
     message = message.strip()
-    texts.append(f'Only write a smart contract respective code: {message} [/INST]')
-    return ''.join(texts)
+    message = f'Only write a smart contract respective code: {message.strip()}'
+    return prompt_builder(CONTRACT_SYSTEM_PROMPT, message)
