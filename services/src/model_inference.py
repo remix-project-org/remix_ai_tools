@@ -1,6 +1,6 @@
 from exceptiongroup import catch
 from src.prompts import *
-from src.llm_output_parser import get_string_between, stopping_criteria
+from src.llm_output_parser import get_string_between
 from src.llm_output_parser import StopOnTokens
 import torch, os
 from threading import Thread
