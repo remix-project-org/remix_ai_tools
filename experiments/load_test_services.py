@@ -4,41 +4,40 @@ from locust import HttpUser, task, constant, between
 import random, requests
 import json
 
-url = "https://solcoder.remixproject.org"
+url = "https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/"
 class QuickstartUser(HttpUser):
-    wait_time = between(min_wait=10, max_wait=15)
-    host = "https://solcoder.remixproject.org"
+    wait_time = between(min_wait=5, max_wait=10)
+    host = "https://hkfll35zthu6e2-7861.proxy.runpod.net/ai/api/"
 
-    @task
-    def test_answering(self):
-        self.client.post(url,# + "code_completion", 
-        json={  "data":[# convert dictionary to string
-            "What are modiers for in solitdity?",
-            "solidity_answer",
-            False,
-            1000,
-            0.9,
-            0.92,
-            50
-        ]})
+    # @task
+    # def test_answering(self):
+    #     res = self.client.post(url + "solidity_answer", 
+    #     json={  "data":[# convert dictionary to string
+    #         "What are modiers for in solitdity?",
+    #         False,
+    #         1000,
+    #         0.9,
+    #         0.92,
+    #         50
+    #     ]})
 
-    @task
-    def test_code_generation(self):
-        self.client.post(url,# + "code_completion", 
-        json={  "data":[# convert dictionary to string
-            "Function for casting a user vote using the struct Vote",
-            "code_completion",
-            "",
-            False,
-            100,
-            0.9,
-            0.92,
-            50
-        ]})
+    # @task
+    # def test_code_generation(self):
+    #     self.client.post(url + "code_completion", 
+    #     json={  "data":[# convert dictionary to string
+    #         "Function for casting a user vote using the struct Vote",
+    #         "code_completion",
+    #         "",
+    #         False,
+    #         100,
+    #         0.9,
+    #         0.92,
+    #         50
+    #     ]})
 
     @task
     def test_code_explaining(self):
-        self.client.post(url,# + "code_completion", 
+        self.client.post(url + "code_explaining", 
         json={  "data":[# convert dictionary to string
             """
 // SPDX-License-Identifier: GPL-3.0
@@ -57,7 +56,6 @@ contract Storage {
     }
 }
 """,
-            "code_explaining",
             False,
             2000,
             0.9,
