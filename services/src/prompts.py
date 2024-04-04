@@ -12,18 +12,21 @@ ANSWERING_SYSTEM_PROMPT = "You only respond as Solidity AI Assistant that provid
 
 
 model_name = os.getenv("MODEL")
+hu_model = None
 if model_name == "llama13b":
     model_path = "../../codellama-13b-instruct.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'<s>[INST] <<SYS>>\n{sys}\n<</SYS>>\n\n{msg} [/INST]'
 elif model_name == "deepseek":
     model_path = "../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'{sys}\n### INSTRUCTION:\n{msg}\n### RESPONSE:\n'
+    hu_model = "deepseek-ai/deepseek-coder-6.7b-instruct"
 elif model_name == "mistral":
     model_path = "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'<|im_start|>system\n{sys}<|im_end|>\n<|im_start|>user\n{msg}<|im_end|>\n<|im_start|>assistant"'
 elif model_name == "stability":
     model_path = "../../stable-code-3b-q5_k_m.gguf"
     prompt_builder = lambda sys, msg: f'<|im_start|>system\n{sys}<|im_end|>\n<|im_start|>user\n{msg}<|im_end|>\n<|im_start|>assistant"'
+    hu_model = "stabilityai/stable-code-instruct-3b"
 else:
     raise ValueError('Wrong model specified. The given model is not supported yet')
 

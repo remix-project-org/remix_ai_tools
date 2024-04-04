@@ -1,6 +1,6 @@
 import gradio as gr
 import os
-from src.model_inference_cpp import *
+from src.model_inference import *
 
 
 codecomp = gr.Interface(
