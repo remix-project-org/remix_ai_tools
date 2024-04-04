@@ -17,7 +17,7 @@ if model_name == "llama13b":
     model_path = "../../codellama-13b-instruct.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'<s>[INST] <<SYS>>\n{sys}\n<</SYS>>\n\n{msg} [/INST]'
 elif model_name == "deepseek":
-    model_path = "../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf"
+    model_path = "../../deepseek-coder-1.3b-instruct.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'{sys}\n### INSTRUCTION:\n{msg}\n### RESPONSE:\n'
     hu_model = "deepseek-ai/deepseek-coder-1.3b-instruct"
 elif model_name == "mistral":
