@@ -10,7 +10,7 @@ model = Llama(
   n_threads=16,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=4098
+  n_ctx=2048
 )
 
 
