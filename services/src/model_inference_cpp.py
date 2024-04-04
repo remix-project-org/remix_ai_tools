@@ -63,7 +63,7 @@ def run_code_generation(
             stopping_criteria=stopping_criteria
         )
 
-        outputs = model(**generate_kwargs)
+        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
@@ -91,7 +91,7 @@ def run_code_explaining(
             temperature=temperature
         )
 
-        outputs = model(**generate_kwargs)
+        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
@@ -119,7 +119,7 @@ def run_err_explaining(
             temperature=temperature,
         )
 
-        outputs = model(**generate_kwargs)
+        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
@@ -149,7 +149,7 @@ def run_contract_generation(
             temperature=temperature,
         )
 
-        outputs = model(**generate_kwargs)
+        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         if compile.run(generated_contract=text):
@@ -191,7 +191,7 @@ def run_answering(
             temperature=temperature,
         )
 
-        outputs = model(**generate_kwargs)
+        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
