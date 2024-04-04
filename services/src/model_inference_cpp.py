@@ -4,13 +4,13 @@ from src.llm_output_parser import get_string_between
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens
-
+import os
 model = Llama(
   model_path=model_path, 
-  n_threads=16,           
+  n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=4096
+  n_ctx=4096, 
 )
 
 
