@@ -36,10 +36,10 @@ def run_code_completion(
         )
         #model.reset()
         print('INFO: os PID', os.getpid())
+        model.set_cache(None)
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         gc.collect()
-        model.set_cache(None)
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
