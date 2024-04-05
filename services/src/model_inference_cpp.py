@@ -35,11 +35,10 @@ def run_code_completion(
             stopping_criteria=stopping_criteria
         )
         #model.reset()
-        print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread())
+        print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
         model.set_cache(None)
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        threading.currentThread().setDaemon(True)
         gc.collect()
         return text
     except Exception as ex:
