@@ -4,7 +4,7 @@ from src.llm_output_parser import get_string_between
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens
-import os, gc
+import os, gc, threading
 model = Llama(
   model_path=model_path, 
   n_threads=1,           
@@ -35,7 +35,7 @@ def run_code_completion(
             stopping_criteria=stopping_criteria
         )
         #model.reset()
-        print('INFO: os PID', os.getpid())
+        print('INFO: os PID', os.getpid(), "   Thread:"threading.current_thread())
         model.set_cache(None)
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
