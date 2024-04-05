@@ -35,7 +35,6 @@ def run_code_completion(
             stopping_criteria=stopping_criteria
         )
         
-        llama_cpp.llama_kv_cache_clear(model._ctx)
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
