@@ -38,6 +38,7 @@ def run_code_completion(
         print('INFO: model n tokens', model.n_tokens)
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        model.reset()
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
