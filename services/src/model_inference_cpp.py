@@ -35,10 +35,9 @@ def run_code_completion(
             stopping_criteria=stopping_criteria
         )
         #model.reset()
-        print('INFO: model n tokens', model.n_tokens)
+        print('INFO: os PID', os.getpid())
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        model.reset()
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
