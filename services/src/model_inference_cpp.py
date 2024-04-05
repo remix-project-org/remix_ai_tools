@@ -34,7 +34,8 @@ def run_code_completion(
             temperature=temperature,
             stopping_criteria=stopping_criteria
         )
-        
+        #model.reset()
+        print('INFO: model n tokens', model.n_tokens)
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
