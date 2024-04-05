@@ -11,7 +11,7 @@ class QuickstartUser(HttpUser):
 
     @task
     def test_code_completion(self):
-        requests.post(url,# + "code_completion", 
+        self.client.post(url,# + "code_completion", 
         json={  "data":[# convert dictionary to string
             "// SPDX-License-Identifier: GPL-3.0\n pragma solidity",
             "code_completion",
