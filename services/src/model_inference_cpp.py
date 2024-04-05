@@ -4,7 +4,7 @@ from src.llm_output_parser import get_string_between
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens
-import os, llama_cpp
+import os, gc
 model = Llama(
   model_path=model_path, 
   n_threads=1,           
@@ -38,6 +38,8 @@ def run_code_completion(
         print('INFO: os PID', os.getpid())
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        gc.collect()
+        model.set_cache(None)
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
