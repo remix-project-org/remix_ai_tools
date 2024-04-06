@@ -9,7 +9,7 @@ model = Llama(
   model_path=model_path, 
   n_threads=1,           
   n_gpu_layers=-1,
-  verbose=False, 
+  verbose=True, 
   n_ctx=2048, 
 )
 
