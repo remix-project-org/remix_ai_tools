@@ -36,7 +36,7 @@ def run_code_completion(
         )
         #model.reset()
         print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
-        model.set_cache(None)
+        model.context_params.n_ctx = 1024
         outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         gc.collect()
@@ -95,6 +95,7 @@ def run_code_explaining(
             temperature=temperature
         )
 
+        model.context_params.n_ctx = 4096
         outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
