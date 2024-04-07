@@ -192,6 +192,7 @@ def run_answering(
         prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
         print('INFO - Solidity answering')
+        print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
