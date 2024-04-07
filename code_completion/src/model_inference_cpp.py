@@ -2,6 +2,7 @@ from src.prompts import *
 from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
+import threading
 
 use_deep_seek = True
 model = Llama(
@@ -12,6 +13,7 @@ model = Llama(
   n_ctx=2048,
   verbose=False
 )
+lock = threading.Lock()
 
 
 async def run_code_completion(
@@ -36,7 +38,9 @@ async def run_code_completion(
             temperature=temperature,
             stopping_criteria=stopping_criteria
         )
-        outputs = model(**generate_kwargs)
+
+        with lock:
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
@@ -67,7 +71,8 @@ async def run_code_generation(
             stopping_criteria=stopping_criteria
         )
 
-        outputs = model(**generate_kwargs)
+        with lock:
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         text = text.replace("```solidity \n", "").replace("```", "")
         return text
