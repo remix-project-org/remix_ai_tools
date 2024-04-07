@@ -8,7 +8,7 @@ import os, gc, threading
 model = Llama(
   model_path=model_path, 
   n_threads=1,           
-  n_gpu_layers=-1,
+  n_gpu_layers=20,
   verbose=True, 
   n_ctx=2048, 
 )
