@@ -13,6 +13,8 @@ model = Llama(
   n_ctx=2048, 
 )
 
+lock = threading.Lock()
+
 
 def run_code_completion(
     context_code: str,
@@ -37,8 +39,8 @@ def run_code_completion(
         #model.reset()
         print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
 
-        threading.RLock()
-        outputs = model(**generate_kwargs)
+        with lock:
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
@@ -67,8 +69,8 @@ def run_code_generation(
             stopping_criteria=stopping_criteria
         )
 
-        threading.RLock()
-        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+        with lock:
+            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
@@ -98,8 +100,8 @@ def run_code_explaining(
         )
 
         model.context_params.n_ctx = 4096
-        threading.RLock()
-        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+        with lock:
+            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
@@ -157,8 +159,8 @@ def run_contract_generation(
             temperature=temperature,
         )
 
-        threading.RLock()
-        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+        with lock:
+            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         if compile.run(generated_contract=text):
@@ -200,9 +202,8 @@ def run_answering(
             top_k=top_k,
             temperature=temperature,
         )
-
-        threading.RLock()
-        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+        with lock:
+            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
