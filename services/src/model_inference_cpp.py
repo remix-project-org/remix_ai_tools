@@ -36,8 +36,7 @@ def run_code_completion(
             temperature=temperature,
             stopping_criteria=stopping_criteria
         )
-        #model.reset()
-        print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
+        print('INFO - Code Completion')
 
         with lock:
             outputs = model(**generate_kwargs)
@@ -90,7 +89,6 @@ def run_code_explaining(
         prompt = get_codexplain_prompt(code)
         
         print('INFO - Code Explaining')
-        print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -103,7 +101,6 @@ def run_code_explaining(
         with lock:
             outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
-        text = get_string_between(text, "```", "```") if '```' in text else text
         return text
     except Exception as ex:
         print('ERROR - Code explaining', ex)
