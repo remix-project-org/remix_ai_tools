@@ -4,7 +4,8 @@ from src.llm_output_parser import get_string_between
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens
-import os, threading
+import threading
+
 model = Llama(
   model_path=model_path, 
   n_threads=1,           
@@ -196,7 +197,6 @@ def run_answering(
         prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
         print('INFO - Solidity answering')
-        print('INFO: os PID', os.getpid(), "   Thread:", threading.current_thread().ident)
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
