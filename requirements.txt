@@ -20,3 +20,7 @@ python-dotenv
 hf_transfer
 gunicorn
 locust
+solc-select==1.0.4
+py-solc==3.2.0
+py-solc-x
+slither-analyzer

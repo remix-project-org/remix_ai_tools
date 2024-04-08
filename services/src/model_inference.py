@@ -1,14 +1,15 @@
 from exceptiongroup import catch
 from src.prompts import *
-from src.llm_output_parser import get_string_between, stopping_criteria
+from src.llm_output_parser import get_string_between
+from src.llm_output_parser import StopOnTokens
 import torch, os
 from threading import Thread
 from typing import Iterator
 from time import time
 from transformers import BitsAndBytesConfig, AutoConfig, AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer, StoppingCriteriaList
-device = "cuda:0" if torch.cuda.is_available() else 'cpu'
+device = "cuda" if torch.cuda.is_available() else 'cpu'
 
-model_id = 'codellama/CodeLlama-13b-Instruct-hf'
+
 bnb_config = BitsAndBytesConfig(
 load_in_4bit=True,
 bnb_4bit_use_double_quant=True,
@@ -19,10 +20,10 @@ bnb_4bit_compute_dtype=torch.bfloat16
 m_times = []
 
 if torch.cuda.is_available():
-    config = AutoConfig.from_pretrained(model_id)
+    config = AutoConfig.from_pretrained(hu_model)
     config.pretraining_tp = 1
     model = AutoModelForCausalLM.from_pretrained(
-        model_id,
+        hu_model,
         config=config,
         torch_dtype=torch.float16,
         quantization_config=bnb_config,
@@ -33,7 +34,7 @@ else:
     model = None
 
 print('INFO: Model size is:', model.get_memory_footprint())
-tokenizer = AutoTokenizer.from_pretrained(model_id)
+tokenizer = AutoTokenizer.from_pretrained(hu_model)
 
 
 def run_code_completion(
@@ -47,7 +48,7 @@ def run_code_completion(
     
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
-        stop = stopping_criteria(tokenizer, device, completion=True)
+        stop = StoppingCriteriaList([StopOnTokens(tokenizer)]) #stopping_criteria(tokenizer, device, completion=True)
         start = time()
         print('INFO - Code Completion')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
@@ -102,7 +103,7 @@ def run_code_generation(
 
     try:
         prompt = get_cogen_prompt(gen_comment)
-        stop = stopping_criteria(tokenizer, device, completion=False)
+        stop = StoppingCriteriaList([StopOnTokens(tokenizer)])#stopping_criteria(tokenizer, device, completion=False)
         
         print('INFO - Code Generation')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
@@ -248,7 +249,7 @@ def run_contract_generation(
         
         print('INFO - Error Explaining')
         inputs = tokenizer([prompt], return_tensors='pt', add_special_tokens=False).to(device)
-        stop = stopping_criteria(tokenizer, device, completion=False)
+        stop = StoppingCriteriaList([StopOnTokens(tokenizer)])#stopping_criteria(tokenizer, device, completion=False)
 
         streamer = TextIteratorStreamer(tokenizer,
                                         timeout=10.,

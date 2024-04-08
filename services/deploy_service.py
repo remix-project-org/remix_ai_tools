@@ -44,8 +44,8 @@ errorexp = gr.Interface(
 
 contractgen = gr.Interface(
     fn=run_contract_generation,
-    inputs=["text", "checkbox", gr.Slider(0, 2000,300), gr.Slider(0.01, 1, 0.2),
-            gr.Slider(0, 1, 0.8), gr.Slider(1, 200, 50)],
+    inputs=["text", "checkbox", gr.Slider(0, 2000,1000), gr.Slider(0.01, 1, 0.8),
+            gr.Slider(0, 1, 0.92), gr.Slider(1, 200, 30)],
     outputs=["text"],
     title="Contract Generation",
     api_name="contract_generation"
@@ -69,5 +69,5 @@ gr_app = gr.TabbedInterface([codecomp, codegen, codeexp, errorexp, contractgen, 
                           "solidity_answer"])
 
 if __name__ == "__main__":
-    gr_app.queue(max_size=100).launch(share=True, root_path="/ai-tools", max_threads=50, show_api=False)
+    gr_app.queue(max_size=100).launch(share=True, root_path="/ai-tools", max_threads=1, show_api=False)
     # app.queue(5).launch(share=True, root_path="/ai-tools", auth=(os.getenv('GRADIO_ADMIN'), os.getenv('GRADIO_ADMIN_PASS')))
