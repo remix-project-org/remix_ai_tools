@@ -160,7 +160,10 @@ def run_contract_generation(
             outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
-        text = text.replace("solidity", "")
+
+        if model_name == "deepseek": 
+            text = ''.join(text.splitlines()[1:]) # remove generated solidity prefix
+
         if compile.run(generated_contract=text):
             print('INFO: Contract compiles!')
             return text
