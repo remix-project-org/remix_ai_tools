@@ -162,7 +162,7 @@ def run_contract_generation(
         text = get_string_between(text, "```", "```") if '```' in text else text
 
         if model_name == "deepseek": 
-            text = ''.join(text.splitlines()[1:]) # remove generated solidity prefix
+            text = '\n'.join(text.splitlines()[1:]) # remove generated solidity prefix
 
         if compile.run(generated_contract=text):
             print('INFO: Contract compiles!')
