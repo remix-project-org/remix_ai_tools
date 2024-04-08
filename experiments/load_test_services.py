@@ -4,10 +4,10 @@ from locust import HttpUser, task, constant, between
 import random, requests
 import json
 
-url = "https://7dixmojk6ir0ot-7861.proxy.runpod.net/ai/api/"
+url = "https:solcoder.remixproject.org"
 class QuickstartUser(HttpUser):
     wait_time = between(min_wait=10, max_wait=20)
-    host = "https://7dixmojk6ir0ot-7861.proxy.runpod.net/ai/api/"
+    host = "https:solcoder.remixproject.org"
 
     # @task
     # def test_answering(self):
