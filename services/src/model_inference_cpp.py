@@ -167,14 +167,14 @@ def run_contract_generation(
             print('Contract does not compile. New generation!')
             if temperature-0.2 <=0:
                 raise ValueError("No safe contract generated") 
-            new_text = run_contract_generation(contract_description=contract_description,
+            text = run_contract_generation(contract_description=contract_description,
                                     stream_result=stream_result,
                                     max_new_tokens=max_new_tokens,
                                     temperature=0.1 if temperature-0.2 <=0 else temperature-0.2,
                                     top_k=top_k,
                                     top_p=top_p,
                                     min_p=min_p-0.01)
-            return new_text
+            return text
     except Exception as ex:
         print('ERROR - Contract Generation', ex)
         return ex
