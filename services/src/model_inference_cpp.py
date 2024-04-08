@@ -177,6 +177,7 @@ def run_contract_generation(
                                     min_p=min_p-0.01)
             return text
     except Exception as ex:
+        print('Generated contract\n', text)
         print('ERROR - Contract Generation', ex)
         return ex
 
