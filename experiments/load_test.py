@@ -57,8 +57,7 @@ contract Storage {
 
 }
             """,
-            False,
-            10,
+            1024,
             1,
             0.9,
             50
