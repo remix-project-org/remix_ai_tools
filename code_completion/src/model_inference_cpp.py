@@ -18,7 +18,7 @@ insertion_model = Llama(
   model_path=insertsion_model_path, 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=2048,
+  n_ctx=4096,
   verbose=False
 )
 
