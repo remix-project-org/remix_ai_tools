@@ -86,7 +86,7 @@ async def run_code_insertion(
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
-        print('ERROR - Code Completion', ex)
+        print('ERROR - Code Insertion', ex)
         return "Server error"
 
 
