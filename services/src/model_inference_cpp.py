@@ -45,7 +45,7 @@ def run_code_completion(
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return ""
+        return ["Context data is too long. Try it with less code context"]
 
 def run_code_generation(
     gen_comment: str,
@@ -76,7 +76,7 @@ def run_code_generation(
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
-        return ["Context data is too long. Try it with less code context"]
+        return "Context data is too long. Try it with less code context"
 
 def run_code_explaining(
     code: str,
@@ -104,7 +104,7 @@ def run_code_explaining(
         return text
     except Exception as ex:
         print('ERROR - Code explaining', ex)
-        return ["Context data is too long. Try it with less code context"]
+        return "Context data is too long. Try it with less code context"
 
 def run_err_explaining(
     error_or_warning: str,
@@ -131,7 +131,7 @@ def run_err_explaining(
         return text
     except Exception as ex:
         print('ERROR - Error Explaining', ex)
-        return ["Context data is too long. Try it with less code context"]
+        return "Context data is too long. Try it with less code context"
     
 def run_contract_generation(
     contract_description: str,
@@ -209,4 +209,4 @@ def run_answering(
         return text
     except Exception as ex:
         print('ERROR - Question Answering', ex)
-        return ["Context data is too long. Try it with less code context"]
+        return "Context data is too long. Try it with less code context"
