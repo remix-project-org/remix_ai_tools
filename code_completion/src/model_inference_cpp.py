@@ -45,7 +45,7 @@ async def run_code_completion(
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return "Server error"
+        return ""
 
 
 
@@ -78,4 +78,4 @@ async def run_code_generation(
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
-        return "Server error"
+        return ""
