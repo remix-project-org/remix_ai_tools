@@ -11,7 +11,7 @@ model = Llama(
   n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=2048, 
+  n_ctx=4096, 
 )
 
 lock = threading.Lock()
@@ -98,7 +98,6 @@ def run_code_explaining(
             temperature=temperature
         )
 
-        model.context_params.n_ctx = 4096
         with lock:
             outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
