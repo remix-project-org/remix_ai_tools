@@ -17,7 +17,6 @@ def run(generated_contract):
     """Perfoms solidity compilation on LLM generated contracts. Returns `True` if no error occured during the compilation process, `False` otherwise"""
     try:
         st = time.time()
-        print(generated_contract)
         temp_file = 'temp' + _generate_random_string(10) + '.sol'
         with open(temp_file, 'w+') as fhd:
             fhd.write(generated_contract)
