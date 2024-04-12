@@ -11,7 +11,7 @@ model = Llama(
   n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=2048, 
+  n_ctx=4496*3, 
 )
 
 lock = threading.Lock()
@@ -45,7 +45,7 @@ def run_code_completion(
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return "Server error"
+        return ["Context data is too long. Try it with less code context!"]
 
 def run_code_generation(
     gen_comment: str,
@@ -76,7 +76,7 @@ def run_code_generation(
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
-        return "Server error"
+        return "Context data is too long. Try it with less code context!"
 
 def run_code_explaining(
     code: str,
@@ -98,14 +98,13 @@ def run_code_explaining(
             temperature=temperature
         )
 
-        model.context_params.n_ctx = 4096
         with lock:
             outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
         print('ERROR - Code explaining', ex)
-        return "Server error"
+        return "Context data is too long. Try it with less code context!"
 
 def run_err_explaining(
     error_or_warning: str,
@@ -132,7 +131,7 @@ def run_err_explaining(
         return text
     except Exception as ex:
         print('ERROR - Error Explaining', ex)
-        return "Server error"
+        return "Context data is too long. Try it with less code context!"
     
 def run_contract_generation(
     contract_description: str,
@@ -210,4 +209,4 @@ def run_answering(
         return text
     except Exception as ex:
         print('ERROR - Question Answering', ex)
-        return "Server error"
+        return "Context data is too long. Try it with less code context!"

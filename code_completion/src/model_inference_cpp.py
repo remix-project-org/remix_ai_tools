@@ -10,7 +10,7 @@ model = Llama(
   #model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=2048,
+  n_ctx=4096*5,
   verbose=False
 )
 lock = threading.Lock()
@@ -45,7 +45,7 @@ async def run_code_completion(
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return "Server error"
+        return ""
 
 
 
@@ -78,4 +78,4 @@ async def run_code_generation(
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
-        return "Server error"
+        return ""
