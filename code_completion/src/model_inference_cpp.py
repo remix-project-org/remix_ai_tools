@@ -4,23 +4,24 @@ from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 import threading
 
+DEFAULT_CONTEXT_SIZE = 2048
 use_deep_seek = True
 completion_model = Llama(
   model_path=completion_model_path, 
   #model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=4096*5,
+  n_ctx=DEFAULT_CONTEXT_SIZE*20,
   verbose=False
 )
 
-insertion_model = completion_model #Llama(
-#   model_path=insertsion_model_path, 
-#   n_threads=16,           
-#   n_gpu_layers=-1,
-#   n_ctx=4096,
-#   verbose=False
-# )
+insertion_model = Llama(
+  model_path=insertsion_model_path, 
+  n_threads=16,           
+  n_gpu_layers=-1,
+  n_ctx=DEFAULT_CONTEXT_SIZE*20,
+  verbose=False
+)
 
 lock = threading.Lock()
 

@@ -45,7 +45,7 @@ def run_code_completion(
         return text
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return ["Context data is too long. Try it with less code context!"]
+        return "Context data is too long. Try it with less code context!"
 
 def run_code_generation(
     gen_comment: str,
