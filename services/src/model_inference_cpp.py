@@ -165,7 +165,6 @@ def run_contract_generation(
             text = '\n'.join(text.splitlines()[1:]) # remove generated solidity prefix
 
         if compile.run(generated_contract=text):
-            print('INFO: Contract compiles!')
             return text
         else:
             print('Contract does not compile. New generation!')
