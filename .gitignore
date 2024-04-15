@@ -7,3 +7,4 @@ experiments/*.html
 experiments/*.gguf
 experiments/__pycache__/
 models
+**/node_modules
