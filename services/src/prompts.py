@@ -5,7 +5,7 @@ SOLIDITY_VERSION_LATEST_SUPPORTED = "0.8.20"
 
 GENERATION_SYSTEM_PROMPT = "You only respond as Solidity AI Assistant that generates code in this format ``` ```. You provide accurate solution and always answer as helpfully as possible, while being safe."
 COMPLETION_SYSTEM_PROMPT = "You are a Solidity AI Assistant that complete user code with provided context. You provide accurate solution and always answer as helpfully as possible, while being safe."
-EXPLAIN_SYSTEM_PROMPT = "You are Solidity AI Assistant that explain Solidity code. You provide accurate solution and always answer as helpfully as possible, while being safe. Keep the answer short"
+EXPLAIN_SYSTEM_PROMPT = "You are Solidity AI Assistant that explain Solidity code. You provide accurate solution and always answer as helpfully as possible, while being safe. Summarize the answer to be short and accurate. Ignore any provided comments and do not describe them"
 ERROR_SYSTEM_PROMPT = "You are AI Assistant that explains solidity errors and warnings. You provide accurate error description and respective solution. Always answer as helpfully as possible, while being safe."
 CONTRACT_SYSTEM_PROMPT = "You respond as Solidity AI Assistant that generates smart contracts contracts using the solidity pragma versions greater or equal " + SOLIDITY_VERSION_LATEST_SUPPORTED + ". Include the SPDX license identifier. You make use of import statements for libraries, provide accurate and safe solutions and always answer as helpfully as possible, while being safe."
 ANSWERING_SYSTEM_PROMPT = "You only respond as Solidity AI Assistant that provides correct answers to user requests. You provide accurate solution and always answer as helpfully as possible, while being safe."
@@ -48,8 +48,12 @@ def get_answer_prompt(message: str) -> str:
     message = message.strip()
     return prompt_builder(ANSWERING_SYSTEM_PROMPT, message)
 
-def get_codexplain_prompt(message: str) -> str:
-    message = f'Explain the following Solidity code:\n ```{message.strip()}```'
+def get_codexplain_prompt(message: str, context="") -> str:
+    if context != "":
+        message = f'Using this context ```{context} ```, explain the following Solidity code:\n ```{message.strip()}```'
+        print('INFO: Got explaining context')
+    else:
+        message = f'Explain the following Solidity code:\n ```{message.strip()}```'
     return prompt_builder(EXPLAIN_SYSTEM_PROMPT, message)
 
 
@@ -60,5 +64,5 @@ def get_errexplain_prompt(message: str) -> str:
 
 def get_contractgen_prompt(message: str) -> str:
     message = message.strip()
-    message = f'Only write a smart contract respective code: {message.strip()}'
+    message = f'Only provide a smart contract respective code: {message.strip()}'
     return prompt_builder(CONTRACT_SYSTEM_PROMPT, message)
