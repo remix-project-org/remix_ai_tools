@@ -19,7 +19,7 @@ insertion_model = Llama(
   model_path=insertsion_model_path, 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=DEFAULT_CONTEXT_SIZE*20,
+  n_ctx=DEFAULT_CONTEXT_SIZE*15,
   verbose=False
 )
 
