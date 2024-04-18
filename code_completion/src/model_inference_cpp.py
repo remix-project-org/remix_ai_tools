@@ -6,20 +6,20 @@ import threading
 
 DEFAULT_CONTEXT_SIZE = 2048
 use_deep_seek = True
-completion_model = Llama(
-  model_path=completion_model_path, 
-  #model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
-  n_threads=16,           
-  n_gpu_layers=-1,
-  n_ctx=DEFAULT_CONTEXT_SIZE*10,
-  verbose=False
-)
+# completion_model = Llama(
+#   model_path=completion_model_path, 
+#   #model_path="../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf" if use_deep_seek else "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf", 
+#   n_threads=16,           
+#   n_gpu_layers=-1,
+#   n_ctx=DEFAULT_CONTEXT_SIZE*10,
+#   verbose=False
+# )
 
 insertion_model = Llama(
   model_path=insertsion_model_path, 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=DEFAULT_CONTEXT_SIZE*10,
+  n_ctx=DEFAULT_CONTEXT_SIZE*15,
   verbose=False
 )
 
@@ -38,7 +38,7 @@ async def run_code_completion(
     try:
         prompt = context_code 
         # prompt = get_cocom_prompt(message=comment, is_model_deep_seek=use_deep_seek)
-        stopping_criteria = StoppingCriteriaList([StopOnTokensNL(completion_model.tokenizer())])
+        stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
         generate_kwargs = dict(
             prompt=prompt,
@@ -50,7 +50,7 @@ async def run_code_completion(
         )
 
         with lock:
-            outputs = completion_model(**generate_kwargs)
+            outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
@@ -101,7 +101,7 @@ async def run_code_generation(
 
     try:
         prompt = get_cogen_prompt(gen_comment, is_model_deep_seek=use_deep_seek)
-        stopping_criteria = StoppingCriteriaList([StopOnTokens(completion_model.tokenizer())])
+        stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
@@ -114,7 +114,7 @@ async def run_code_generation(
         )
 
         with lock:
-            outputs = completion_model(**generate_kwargs)
+            outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         text = text.replace("```solidity \n", "").replace("```", "")
         return text
