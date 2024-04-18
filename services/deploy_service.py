@@ -26,7 +26,7 @@ codegen = gr.Interface(
 codeexp = gr.Interface(
     fn=run_code_explaining,
     inputs=["text", "checkbox", gr.Slider(0, 2000,400), gr.Slider(0.01, 1, 0.2),
-            gr.Slider(0, 1, 0.8), gr.Slider(1, 200, 50)],
+            gr.Slider(0, 1, 0.8), gr.Slider(1, 200, 50), "text"],
     outputs=["text"],
     title="Code Explaining",
     api_name="code_explaining"

@@ -25,10 +25,11 @@ The folder `services` implements the services
 - ```Code Explaining```
 - ```Error Correction and Explaining```
 
-Run 
+First install node js and then run 
 ```bash
 cd services
-git fetch && git pull && MODEL=deepseek gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 3 --threads 64 --timeout 600 -k uvicorn.workers.UvicornWorker
+yarn install 
+git fetch && git pull && MODEL=deepseek gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 3 --threads 64 --timeout 600
 ```
 Here is the list of supported models
 * llama13b - default

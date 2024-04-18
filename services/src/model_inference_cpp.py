@@ -80,14 +80,16 @@ def run_code_generation(
 
 def run_code_explaining(
     code: str,
-    stream_result: bool=True,
+    stream_result: bool = True,
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
     top_p: float = 0.9,
-    top_k: int = 50) -> Iterator[str]:
+    top_k: int = 50,
+    context: str = ""
+    ) -> Iterator[str]:
 
     try:
-        prompt = get_codexplain_prompt(code)
+        prompt = get_codexplain_prompt(code, context=context)
         
         print('INFO - Code Explaining')
         generate_kwargs = dict(
