@@ -8,7 +8,7 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
    --dearmor
 
 apt-get update
-sudo apt-get install -y mongodb-org
+apt-get install -y mongodb-org
 
 wget -qO - https://pgp.mongodb.com/server-7.0.asc | sudo apt-key add -
 #atlas deployments search indexes create --file indexDef-vector.json
