@@ -37,7 +37,7 @@ async def run_code_completion(
     
     try:
         prompt = context_code 
-        # prompt = get_cocom_prompt(message=comment, is_model_deep_seek=use_deep_seek)
+        prompt = get_cocom_prompt(message=context_code, is_model_deep_seek=use_deep_seek)
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
         generate_kwargs = dict(

@@ -1,3 +1,7 @@
+import sys
+
+from rag.rag import get_search_result
+
 COMPLETION_SYSTEM_PROMPT = "You are a Solidity AI Assistant that complete user code with provided context. You provide accurate solution and always answer as helpfully as possible, while being safe. You only provide code ### Instruction:"
 
 completion_model_path = "../../deepseek-coder-1.3b-instruct.Q4_K_M.gguf"
