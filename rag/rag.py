@@ -6,7 +6,7 @@ from tqdm import tqdm
 tqdm.pandas()
 
 embedding_model = SentenceTransformer("thenlper/gte-large")
-mongo_uri = "mongodb://127.0.0.1:27017/?directConnection=true"
+mongo_uri = "mongodb+srv://stephanetetsing:3qOkbZncBclG75e6@cluster0.obggbax.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 def get_embedding(text: str) -> list[float]:
     if not text.strip():
@@ -84,19 +84,21 @@ def get_search_result(query, collection, limit=4, vector_name="vector_index_cos"
 
 def main():
     try:
-        data = pd.read_csv('/cookbook/cookbook_audited_data.csv')
+        data = pd.read_csv('./cookbook/cookbook_audited_data.csv')
 
         if "embedding" not in data.columns:
             data["embedding"] = data["content"].progress_apply(get_embedding)
 
-        data = data.drop(columns=["details", "sources", "_id", "createdAt", "updatedAt", "__v"])
+        data = data.drop(columns=["abi", "bytecode", "description", "contractName", "details", "sources", "_id", "createdAt", "updatedAt", "__v"])
 
         mongo_client = get_mongo_client(mongo_uri)
+        print('INFO: data mem usage', data.memory_usage(deep=True).sum())
+        print('INFO: data mem usage', data.info(memory_usage='deep'))
 
-        # Ingest data into MongoDB
+        # # Ingest data into MongoDB
         db = mongo_client["Audited_contracts"]
         collection = db["contracts"]
-        
+
         # Delete any existing records in the collection
         collection.delete_many({})
         documents = data.to_dict("records")
@@ -106,5 +108,5 @@ def main():
         print('Error:', ex)
         raise ex
     
-if __name__=='main':
+if __name__=='__main__':
     main()
