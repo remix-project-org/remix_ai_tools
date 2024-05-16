@@ -33,7 +33,7 @@ greenlet
 python-dotenv
 gdown
 llama-index-vector-stores-postgres
-sentence_transformers
+sentence_transformers==2.7.0
 pgvector 
 asyncpg 
 sqlalchemy[asyncio]
