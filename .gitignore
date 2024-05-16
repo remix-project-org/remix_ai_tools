@@ -8,3 +8,5 @@ experiments/*.gguf
 experiments/__pycache__/
 models
 **/node_modules
+**/**.csv
+**/**.json

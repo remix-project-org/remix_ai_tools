@@ -1,4 +1,15 @@
-import os 
+import os, time
+from rag.utils.utils import VectorDBRetriever, elastic_vector_store, soldoc_db_name, is_rag_initialized
+from rag.elastic_search import get_relevant_solidity_topics
+
+use_rag = is_rag_initialized(soldoc_db_name)
+use_elastic = False # overriddes userag
+
+if use_rag:
+    print('INFO: RAG database initialized!')
+else:
+    print('Warning: RAG database NOT initialized!')
+
 print('INFO: Using Model', os.getenv("MODEL", 'llama13b'))
 
 SOLIDITY_VERSION_LATEST_SUPPORTED = "0.8.20"
@@ -19,7 +30,7 @@ if model_name == "llama13b":
 elif model_name == "deepseek":
     model_path = "../../deepseek-coder-6.7b-instruct.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'{sys}\n### INSTRUCTION:\n{msg}\n### RESPONSE:\n'
-    hu_model = "deepseek-ai/deepseek-coder-1.3b-instruct"
+    hu_model = "deepseek-ai/deepseek-coder-6.7b-instruct"
 elif model_name == "mistral":
     model_path = "../../mistral-7b-instruct-v0.2-code-ft.Q4_K_M.gguf"
     prompt_builder = lambda sys, msg: f'<|im_start|>system\n{sys}<|im_end|>\n<|im_start|>user\n{msg}<|im_end|>\n<|im_start|>assistant"'
@@ -43,10 +54,12 @@ def get_cogen_prompt(message: str) -> str:
     message = message.strip()
     return prompt_builder(GENERATION_SYSTEM_PROMPT, message)
 
-def get_answer_prompt(message: str) -> str:
+def get_answer_prompt(message: str):
     message = message.split('sol-gpt')[-1]
+    rag_prompt, links = get_RAG_results(user_prompt=message)
+    sys_prompt = ANSWERING_SYSTEM_PROMPT + "\n Use the following context to answer the user request:\n" + rag_prompt
     message = message.strip()
-    return prompt_builder(ANSWERING_SYSTEM_PROMPT, message)
+    return prompt_builder(sys_prompt, message), links
 
 def get_codexplain_prompt(message: str, context="") -> str:
     if context != "":
@@ -55,7 +68,6 @@ def get_codexplain_prompt(message: str, context="") -> str:
     else:
         message = f'Explain the following Solidity code:\n ```{message.strip()}```'
     return prompt_builder(EXPLAIN_SYSTEM_PROMPT, message)
-
 
 def get_errexplain_prompt(message: str) -> str:
     message = message.strip()
@@ -66,3 +78,44 @@ def get_contractgen_prompt(message: str) -> str:
     message = message.strip()
     message = f'Only provide a smart contract respective code: {message.strip()}'
     return prompt_builder(CONTRACT_SYSTEM_PROMPT, message)
+
+def get_RAG_results(user_prompt):
+    try:
+        start = time.time()
+        if use_elastic:
+            result = get_relevant_solidity_topics(user_prompt=user_prompt, k=2)
+            rag_prompt = ""
+            urls = []
+            for url, content in result:
+                rag_prompt += content[:4000] + "\n" 
+                urls.append(url)
+
+            print('INFO: Elastic RAG retrieval took', time.time() - start, "seconds")
+            return[rag_prompt, urls]
+        elif use_rag:
+            retriever = VectorDBRetriever(elastic_vector_store, query_mode="default", similarity_top_k=2)
+            results = retriever.retrieve(user_prompt)
+
+            rag_prompt = ""
+            urls = []
+            for idx in range(len(results)):
+                rag_prompt += results[idx].node.get_content()[:4000] + "\n" 
+                urls.append([results[idx].node.metadata['url'], results[idx].node.metadata['title']])
+                print('INFO: retrieved result with score', results[idx].score)
+            
+            print('INFO: Local RAG retrieval took', time.time() - start, "seconds")
+            return[rag_prompt, urls]
+        else:
+            print('INFO: RAG retrieval took', time.time() - start, "seconds")
+            return ["", None]
+    except Exception as ex:
+        print('INFO: RAG retrieval took', time.time() - start, "seconds")
+        print(ex)
+        return ["", None]
+    
+def add_read_more(urls:list):
+    complete_str = "\nClick on following links for more information:\n\t"
+    for url, title in urls:
+        complete_str += f"-  [{title}]({url}) \n\t"
+    return complete_str
+    

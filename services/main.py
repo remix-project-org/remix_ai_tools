@@ -1,4 +1,5 @@
-import os
+import os, sys
+sys.path.append('../')
 from deploy_service import gr, gr_app
 from fastapi import FastAPI, Body
 from src.model_inference_cpp import *
