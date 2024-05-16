@@ -32,3 +32,9 @@ sqlalchemy[asyncio]
 greenlet
 python-dotenv
 gdown
+llama-index-vector-stores-postgres
+sentence_transformers
+pgvector 
+asyncpg 
+sqlalchemy[asyncio]
+greenlet

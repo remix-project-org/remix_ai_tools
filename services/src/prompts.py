@@ -3,7 +3,7 @@ from rag.utils.utils import VectorDBRetriever, elastic_vector_store, soldoc_db_n
 from rag.elastic_search import get_relevant_solidity_topics
 
 use_rag = is_rag_initialized(soldoc_db_name)
-use_elastic = True # overriddes userag
+use_elastic = False # overriddes userag
 
 if use_rag:
     print('INFO: RAG database initialized!')

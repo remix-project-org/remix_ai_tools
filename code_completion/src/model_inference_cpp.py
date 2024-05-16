@@ -33,7 +33,7 @@ async def run_code_completion(
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
     top_p: float = 0.9,
-    top_k: int = 50) -> Iterator[str]:
+    top_k: int = 50) -> str:
     
     try:
         prompt = context_code 
@@ -65,7 +65,7 @@ async def run_code_insertion(
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
     top_p: float = 0.9,
-    top_k: int = 50) -> Iterator[str]:
+    top_k: int = 50) -> str:
     
     try:
         prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx)
@@ -99,7 +99,7 @@ async def run_code_generation(
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
     top_p: float = 0.9,
-    top_k: int = 50) -> Iterator[str]:
+    top_k: int = 50) -> str:
 
     try:
         prompt = get_cogen_prompt(gen_comment, is_model_deep_seek=use_deep_seek)
