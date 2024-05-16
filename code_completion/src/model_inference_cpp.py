@@ -40,6 +40,7 @@ async def run_code_completion(
         prompt = get_cocom_prompt(message=context_code, is_model_deep_seek=use_deep_seek)
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
+        print('INFO - Code Completion')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -73,6 +74,7 @@ async def run_code_insertion(
         # TODO: only allow 1 artifact generation: example 1 function, 1 contract, 1 struct, 1 interface, 1 for loop or similar. single {}
         # stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
+        print('INFO - Code Insertion')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,

@@ -1,112 +1,48 @@
-import requests
+import json
 import pandas as pd
-from sentence_transformers import SentenceTransformer
-import pymongo
-from tqdm import tqdm 
-tqdm.pandas()
-
-embedding_model = SentenceTransformer("thenlper/gte-large")
-mongo_uri = "mongodb+srv://stephanetetsing:3qOkbZncBclG75e6@cluster0.obggbax.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-def get_embedding(text: str) -> list[float]:
-    if not text.strip():
-        print("Attempted to get embedding for empty text.")
-        return []
-
-    embedding = embedding_model.encode(text)
-
-    return embedding.tolist()
-
-def get_mongo_client(mongo_uri):
-    """Establish connection to the MongoDB."""
-    try:
-        client = pymongo.MongoClient(mongo_uri)
-        print("Connection to MongoDB successful")
-        return client
-    except pymongo.errors.ConnectionFailure as e:
-        print(f"Connection failed: {e}")
-        return None
-    
-def vector_search(user_query, collection, limit=4, vector_name="vector_index_cos"):
-    """
-    Perform a vector search in the MongoDB collection based on the user query.
-
-    Args:
-    user_query (str): The user's query string.
-    collection (MongoCollection): The MongoDB collection to search.
-
-    Returns:
-    list: A list of matching documents.
-    """
-
-    # Generate embedding for the user query
-    query_embedding = get_embedding(user_query)
-
-    if query_embedding is None:
-        return "Invalid query or embedding generation failed."
-
-    # Define the vector search pipeline
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": vector_name, # vector_index_cos
-                "queryVector": query_embedding,
-                "path": "embedding",
-                "numCandidates": 300,  # Number of candidate matches to consider
-                "limit": limit,  # Return top 4 matches
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,  # Exclude the _id field
-                "content": 1,  # Include the plot field
-                "filename": 1,  # Include the title field
-                "contractName": 1,  # Include the genres field
-                "score": {"$meta": "vectorSearchScore"},  # Include the search score
-            }
-        },
-    ]
-
-    # Execute the search
-    results = collection.aggregate(pipeline)
-    return list(results)
-
-def get_search_result(query, collection, limit=4, vector_name="vector_index_cos"):
-
-    get_knowledge = vector_search(query, collection, limit, vector_name)
-
-    search_result = ""
-    for result in get_knowledge:
-        search_result += f"#{result.get('filename', 'N/A')}\n{result.get('content', 'N/A')}\n"
-
-    return search_result
+from tqdm import tqdm
+from rag.utils.utils import conn, cookbook_db_name, get_embedding, TextNode, VectorDBRetriever, rag_vector_store
 
 
 def main():
     try:
+        print('INFO: Ingesting data ...')
+        with conn.cursor() as c:
+            print('INFO creating database ...')
+            c.execute(f"DROP DATABASE IF EXISTS {cookbook_db_name}")
+            c.execute("DROP EXTENSION IF EXISTS vector")
+            c.execute(f"CREATE DATABASE {cookbook_db_name}")
+            c.execute("CREATE EXTENSION vector")
+
         data = pd.read_csv('./cookbook/cookbook_audited_data.csv')
-
-        if "embedding" not in data.columns:
-            data["embedding"] = data["content"].progress_apply(get_embedding)
-
-        data = data.drop(columns=["abi", "bytecode", "description", "contractName", "details", "sources", "_id", "createdAt", "updatedAt", "__v"])
-
-        mongo_client = get_mongo_client(mongo_uri)
-        print('INFO: data mem usage', data.memory_usage(deep=True).sum())
-        print('INFO: data mem usage', data.info(memory_usage='deep'))
-
-        # # Ingest data into MongoDB
-        db = mongo_client["Audited_contracts"]
-        collection = db["contracts"]
-
-        # Delete any existing records in the collection
-        collection.delete_many({})
-        documents = data.to_dict("records")
-        collection.insert_many(documents)
+        nodes = []
+        for _, row in tqdm(data.iterrows(), total=len(data), desc='getting nodes'):
+            node = TextNode(text=row.content)
+            node.embedding=json.loads(row.embedding)
+            nodes.append(node)
+        
+        rag_vector_store.add(nodes)
+        print('INFO: Added vectors to DB')
 
     except Exception as ex: 
         print('Error:', ex)
         raise ex
     
+def test():
+    query_str = "Write a SimpleERC20 contract"
+    query_embedding = get_embedding(query_str)
+
+    query_mode = "default"
+    # query_mode = "sparse"
+    # query_mode = "hybrid"
+
+    retr = VectorDBRetriever(rag_vector_store, query_mode, similarity_top_k=5)
+    query_result = retr.retrieve(query_str)
+
+    #query_result = rag_vector_store.query(rag_vector_store_query)
+    print(query_result[0].node.get_content())
+          
+    
 if __name__=='__main__':
     main()
+    test()

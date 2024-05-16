@@ -191,10 +191,10 @@ def run_answering(
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
     top_p: float = 0.9,
-    top_k: int = 50) -> Iterator[str]:
+    top_k: int = 50) -> str:
 
     try:
-        prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
+        prompt, links = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
         print('INFO - Solidity answering')
         generate_kwargs = dict(
@@ -207,6 +207,10 @@ def run_answering(
         with lock:
             outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
+
+        if links is not None:
+            text += add_read_more(links)
+            
         return text
     except Exception as ex:
         print('ERROR - Question Answering', ex)
