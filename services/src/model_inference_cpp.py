@@ -208,8 +208,8 @@ def run_answering(
             outputs = model(**generate_kwargs, stop=["<|im_end|>"])
         text = outputs["choices"][0]["text"].strip()
 
-        if links is not None:
-            text += add_read_more(links)
+        # if links is not None:
+        #     text += add_read_more(links)
             
         return text
     except Exception as ex:
