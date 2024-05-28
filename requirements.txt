@@ -24,6 +24,7 @@ solc-select==1.0.4
 py-solc==3.2.0
 py-solc-x
 slither-analyzer
+llama-index-core==0.10.39.post1
 llama-index-vector-stores-postgres==0.1.7
 psycopg2-binary
 asyncpg
