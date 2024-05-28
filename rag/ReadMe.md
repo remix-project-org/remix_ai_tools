@@ -1,4 +1,5 @@
 # RAG for code completion and further tasks
+The RAG is meant for enhancing the LLM outputs. 
 
 
 ## Setup local Postgres Database
@@ -26,3 +27,5 @@ gdown <link>
 cd ..
 python rag.py
 ```
+
+Or simply create other data sources and use the `rag.py` script to populate the database with latest informations.
