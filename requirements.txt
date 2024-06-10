@@ -22,7 +22,7 @@ gunicorn
 locust
 solc-select==1.0.4
 py-solc==3.2.0
-py-solc-x
+py-solc-x==2.0.2
 slither-analyzer
 llama-index-core==0.10.39.post1
 llama-index-vector-stores-postgres==0.1.7
