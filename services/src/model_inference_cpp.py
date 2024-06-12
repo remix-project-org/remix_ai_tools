@@ -70,7 +70,7 @@ def run_code_generation(
         )
 
         with lock:
-            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
         return text
@@ -101,7 +101,7 @@ def run_code_explaining(
         )
 
         with lock:
-            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
@@ -128,7 +128,7 @@ def run_err_explaining(
             temperature=temperature,
         )
 
-        outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+        outputs = model(**generate_kwargs])
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
@@ -159,7 +159,7 @@ def run_contract_generation(
         )
 
         with lock:
-            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         text = get_string_between(text, "```", "```") if '```' in text else text
 
@@ -205,7 +205,7 @@ def run_answering(
             temperature=temperature,
         )
         with lock:
-            outputs = model(**generate_kwargs, stop=["<|im_end|>"])
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
 
         # if links is not None:
