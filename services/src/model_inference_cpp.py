@@ -17,7 +17,7 @@ model = Llama(
 lock = threading.Lock()
 
 
-def run_code_completion(
+async def run_code_completion(
     context_code: str,
     comment: str,
     stream_result: bool=True,
@@ -47,7 +47,7 @@ def run_code_completion(
         print('ERROR - Code Completion', ex)
         return "Context data is too long. Try it with less code context!"
 
-def run_code_generation(
+async def run_code_generation(
     gen_comment: str,
     stream_result: bool=True,
     max_new_tokens: int = 1024,
@@ -78,7 +78,7 @@ def run_code_generation(
         print('ERROR - Code generation', ex)
         return "Context data is too long. Try it with less code context!"
 
-def run_code_explaining(
+async def run_code_explaining(
     code: str,
     stream_result: bool = True,
     max_new_tokens: int = 1024,
@@ -108,7 +108,7 @@ def run_code_explaining(
         print('ERROR - Code explaining', ex)
         return "Context data is too long. Try it with less code context!"
 
-def run_err_explaining(
+async def run_err_explaining(
     error_or_warning: str,
     stream_result: bool=True,
     max_new_tokens: int = 1024,
@@ -135,7 +135,7 @@ def run_err_explaining(
         print('ERROR - Error Explaining', ex)
         return "Context data is too long. Try it with less code context!"
     
-def run_contract_generation(
+async def run_contract_generation(
     contract_description: str,
     stream_result: bool=False,
     max_new_tokens: int = 1024,
@@ -185,7 +185,7 @@ def run_contract_generation(
         print('ERROR - Contract Generation', ex)
         return ex
 
-def run_answering(
+async def run_answering(
     prompt: str,
     stream_result: bool=True,
     max_new_tokens: int = 1024,
