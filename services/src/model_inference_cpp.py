@@ -128,7 +128,7 @@ def run_err_explaining(
             temperature=temperature,
         )
 
-        outputs = model(**generate_kwargs])
+        outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         return text
     except Exception as ex:
