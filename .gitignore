@@ -10,3 +10,4 @@ models
 **/node_modules
 **/**.csv
 **/**.json
+.vscode/

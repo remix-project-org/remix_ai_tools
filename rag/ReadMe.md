@@ -8,6 +8,7 @@ sudo apt install postgresql-client postgresql postgresql-contrib
 sudo apt install -y postgresql-common
 sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
 sudo apt install postgresql-14-pgvector
+service postgresql start
 
 psql postgres  # or su postgres
 CREATE ROLE remix WITH LOGIN PASSWORD 'remix';

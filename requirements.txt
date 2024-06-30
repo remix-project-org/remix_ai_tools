@@ -11,7 +11,6 @@ peft==0.7.1
 scipy==1.11.2
 solc-select==1.0.4
 tokenizers==0.15.1
-tqdm==4.65.0
 transformers==4.37.1
 trl==0.7.10
 bitsandbytes==0.42.0
