@@ -1,5 +1,5 @@
 import gradio as gr
-import os, sys
+import sys
 sys.path.append('../')
 from src.model_inference_cpp import *
 

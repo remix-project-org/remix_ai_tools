@@ -1,4 +1,3 @@
-import torch
 from llama_cpp import StoppingCriteria
 
 
@@ -11,7 +10,7 @@ class StopOnTokens(StoppingCriteria):
         self.old_input_ids = None
         self.tokenizer = tokenizer
 
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor):
+    def __call__(self, input_ids, scores):
 
         if self.old_input_ids is None:
             self.old_input_ids = input_ids
@@ -39,7 +38,7 @@ class StopOnTokensNL(StoppingCriteria):
         self.tokenizer = tokenizer
         self.n_tokens = 0
 
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor):
+    def __call__(self, input_ids, scores):
         self.n_tokens += 1
         if self.old_input_ids is None:
             self.old_input_ids = input_ids
