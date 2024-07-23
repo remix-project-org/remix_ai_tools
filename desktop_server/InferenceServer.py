@@ -229,17 +229,13 @@ def code_explaining():
                 else:
                     outputs = multitask_model(**generate_kwargs)
                     text = outputs["choices"][0]["text"]
-                    return  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
+                    yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
         return Response(generate(),  mimetype='text/event-stream')
     
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'error': ex})}")
     
-    except Exception as ex:
-        print('ERROR - Code Explaining', ex)
-        return Response(f"'error': ex")
-
 @app.route('/error_explaining', methods=['POST'])
 async def error_explaining () -> str:
     data = request.json 
@@ -278,7 +274,7 @@ async def error_explaining () -> str:
                 else:
                     outputs = multitask_model(**generate_kwargs)
                     text = outputs["choices"][0]["text"]
-                    return  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
+                    yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
         return Response(generate(),  mimetype='text/event-stream')
     
     except Exception as ex:
@@ -324,7 +320,7 @@ async def run_answering () -> str:
                 else:
                     outputs = multitask_model(**generate_kwargs)
                     text = outputs["choices"][0]["text"]
-                    return  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
+                    yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
         return Response(generate(),  mimetype='text/event-stream')
     
     except Exception as ex:
@@ -336,3 +332,5 @@ if __name__ == '__main__':
     isDesktopAlive = True
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 5501
     app.run(host='0.0.0.0', port=port, processes=1, threaded=True)
+
+# TODO: Handle the context exeeding the model size
