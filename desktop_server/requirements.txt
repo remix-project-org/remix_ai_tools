@@ -1,0 +1,5 @@
+numpy==2.0.0
+packaging==24.1
+pyinstaller==6.9.0
+Werkzeug==2.2.2
+flask[async]==2.0.1
