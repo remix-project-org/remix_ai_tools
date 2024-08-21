@@ -334,3 +334,6 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port, processes=1, threaded=True)
 
 # TODO: Handle the context exeeding the model size
+# TODO: handle harware generation speed in n-tokens/sec
+# TODO: use reset to stop generation
+# TODO: implement stop generation on user request
