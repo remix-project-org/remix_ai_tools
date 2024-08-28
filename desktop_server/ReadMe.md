@@ -3,7 +3,7 @@ Provides a platform independen local inference endpoint for Remix AI
 
 ## Depenencies
 - python 3.10
-- llamacpp v0.2.57
+- llamacpp v0.2.88
 
 ## Setup Environment
 It is important to create a dedicated virtual environment for the bin creation process, as the env libs will be copied in the executables. 
@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 on mac arm devices
 ```
-CMAKE_ARGS="-DLLAMA_METAL_EMBED_LIBRARY=ON -DLLAMA_METAL=on -DBUILD_SHARED_LIBS=OFF" pip install -U llama-cpp-python==0.2.57 --no-cache-dir
+CMAKE_ARGS="-DLLAMA_METAL_EMBED_LIBRARY=ON -DLLAMA_METAL=on -DBUILD_SHARED_LIBS=OFF" pip install -U llama-cpp-python==0.2.88 --no-cache-dir
 
 ```
 
@@ -28,3 +28,4 @@ pyinstaller --collect-all llama_cpp --onefile InferenceServer.py
 ```
 
 ## Supported GPUs
+nvidia GPUs

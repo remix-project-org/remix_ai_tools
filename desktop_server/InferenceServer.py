@@ -4,12 +4,12 @@ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from llama_cpp import Llama, StoppingCriteriaList
 import threading
 from flask import Flask, request, jsonify, Response
+from src.utils.sysInfos import collect_system_info
 import json
 
 app = Flask(__name__)
 
 DEFAULT_CONTEXT_SIZE = 2048
-isDesktopAlive = False
 
 multitask_model = None
 completion_model = None
@@ -18,22 +18,6 @@ completion_lock = threading.Lock()
 general_lock = threading.Lock()
 
 
-def watchdog():
-    global isDesktopAlive
-    print('INFO - Starting the server stopper thread.')
-    while(1):
-        time.sleep(40)
-        if not isDesktopAlive:
-            print('INFO - Stopping the server. No desktop client connected.')
-            os._exit(0)
-        else:
-            isDesktopAlive = False
-
-
-
-# kill daemon inference server releasing port
-# dthr = threading.Thread(target=watchdog)
-# dthr.start()
 
 @app.route('/code_completion', methods=['POST'])
 async def run_code_completion() -> str:
@@ -90,11 +74,11 @@ async def run_code_instertionl() -> str:
     presence_penalty= float(data.get('presence_penalty', 0.2))
 
     try:
-        prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx)
+        prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx, modelName=determine_model(completion_model.model_path))
 
         # No stopping criteria as the in filling pushes in what is good
         # TODO: only allow 1 artifact generation: example 1 function, 1 contract, 1 struct, 1 interface, 1 for loop or similar. single {}
-        # stopping_criteria = StoppingCriteriaList([StopOnTokensNL(completion_model.tokenizer())])
+        stopping_criteria = StoppingCriteriaList([StopOnTokensNL(completion_model.tokenizer())])
 
         print('INFO - Code Insertion')
         generate_kwargs = dict(
@@ -106,7 +90,7 @@ async def run_code_instertionl() -> str:
             # repeat_penalty=repeat_penalty,
             # frequency_penalty=frequency_penalty,
             # presence_penalty=presence_penalty,
-            # stopping_criteria=stopping_criteria
+            stopping_criteria=stopping_criteria
         )
 
         with completion_lock:
@@ -127,7 +111,7 @@ async def run_code_generation(
     top_k: int = 50) -> str:
 
     try:
-        prompt = get_cogen_prompt(gen_comment, is_model_deep_seek=use_deep_seek)
+        prompt = get_cogen_prompt(gen_comment, determine_model(multitask_model.model_path))
         stopping_criteria = StoppingCriteriaList([StopOnTokens(multitask_model.tokenizer())])
         
         print('INFO - Code Generation')
@@ -151,18 +135,25 @@ async def run_code_generation(
 
 @app.route('/state', methods=['GET'])
 async def state():
-    global isDesktopAlive
-    isDesktopAlive = True
     return jsonify({ "status":"running",
                      "completion": True if completion_model!=None else False,
                      "general": True if multitask_model!=None else False})
-                   
+
+@app.route('/sys', methods=['get'])
+async def sysinfos():
+    return jsonify(collect_system_info())
+
+@app.route('/kill', methods=['POST'])
+async def killServerl():
+    os._exit(0)
+
 @app.route('/init_completion', methods=['POST'])
 async def init_insertion():
     global completion_model
     try:
         data = request.json
         model_path = data['model_path']
+        print('INFO - Initializing the completion model with backend prompts', determine_model(model_path))
         completion_model = Llama(
             model_path=model_path, 
             n_threads=16,           
@@ -180,6 +171,7 @@ async def init_general():
     try:
         data = request.json
         model_path = data['model_path']
+        print('INFO - Initializing the general model with backend prompts', determine_model(model_path))
         multitask_model = Llama(
             model_path=model_path, 
             n_threads=16,           
@@ -191,10 +183,22 @@ async def init_general():
     except Exception as ex:
         return jsonify({ "error":'Error while initializing the general model' })
 
+def generate(stream_result, generate_kwargs):
+    with general_lock:
+        if stream_result:
+            for outputs in multitask_model(**generate_kwargs):
+                text = outputs["choices"][0]["text"]
+                yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
+            yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
+        else:
+            outputs = multitask_model(**generate_kwargs)
+            text = outputs["choices"][0]["text"]
+            yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
+
 @app.route('/code_explaining', methods=['POST'])
 def code_explaining():
     data = request.json 
-    code: str = data['code']
+    code: str = data['code'] # type: ignore
     context = data.get('context', "")
     stream_result = data.get('stream_result', False)
     max_new_tokens = int(data.get('max_new_tokens', 20))
@@ -206,7 +210,7 @@ def code_explaining():
     presence_penalty= float(data.get('presence_penalty', 0.2))
 
     try:
-        prompt = get_codexplain_prompt(code, context)
+        prompt = get_codexplain_prompt(code, determine_model(multitask_model.model_path), context)
 
         generate_kwargs = dict(
             prompt=prompt,
@@ -219,25 +223,15 @@ def code_explaining():
             # frequency_penalty=frequency_penalty,
             # presence_penalty=presence_penalty,
         )
-        def generate():
-            with general_lock:
-                if stream_result:
-                    for outputs in multitask_model(**generate_kwargs):
-                        text = outputs["choices"][0]["text"]
-                        yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
-                    yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
-                else:
-                    outputs = multitask_model(**generate_kwargs)
-                    text = outputs["choices"][0]["text"]
-                    yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
-        return Response(generate(),  mimetype='text/event-stream')
+        
+        return Response(generate(stream_result, generate_kwargs),  mimetype='text/event-stream')
     
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'error': ex})}")
     
 @app.route('/error_explaining', methods=['POST'])
-async def error_explaining () -> str:
+async def error_explaining ():
     data = request.json 
     prompt: str = data['prompt']
     stream_result = data.get('stream_result', False)
@@ -250,7 +244,7 @@ async def error_explaining () -> str:
     # presence_penalty= float(data.get('presence_penalty', 0.2))
 
     try:
-        prompt = get_errexplain_prompt(prompt) 
+        prompt = get_errexplain_prompt(prompt, determine_model(multitask_model.model_path)) 
 
         generate_kwargs = dict(
             prompt=prompt,
@@ -264,25 +258,14 @@ async def error_explaining () -> str:
             # presence_penalty=presence_penalty,
         )
 
-        def generate():
-            with general_lock:
-                if stream_result:
-                    for outputs in multitask_model(**generate_kwargs):
-                        text = outputs["choices"][0]["text"]
-                        yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
-                    yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
-                else:
-                    outputs = multitask_model(**generate_kwargs)
-                    text = outputs["choices"][0]["text"]
-                    yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
-        return Response(generate(),  mimetype='text/event-stream')
+        return Response(generate(stream_result, generate_kwargs),  mimetype='text/event-stream')
     
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'error': ex})}")
     
 @app.route('/solidity_answer', methods=['POST'])
-async def run_answering () -> str:
+async def run_answering ():
     data = request.json 
     prompt: str = data['prompt']
     stream_result = data.get('stream_result', False)
@@ -295,7 +278,7 @@ async def run_answering () -> str:
     presence_penalty= float(data.get('presence_penalty', 0.2))
 
     try:
-        prompt = get_answer_prompt(prompt) 
+        prompt = get_answer_prompt(prompt, determine_model(multitask_model.model_path)) 
 
         print('INFO - Answering')
         generate_kwargs = dict(
@@ -310,18 +293,7 @@ async def run_answering () -> str:
             # presence_penalty=presence_penalty,
         )
 
-        def generate():
-            with general_lock:
-                if stream_result:
-                    for outputs in multitask_model(**generate_kwargs):
-                        text = outputs["choices"][0]["text"]
-                        yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
-                    yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
-                else:
-                    outputs = multitask_model(**generate_kwargs)
-                    text = outputs["choices"][0]["text"]
-                    yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
-        return Response(generate(),  mimetype='text/event-stream')
+        return Response(generate(stream_result, generate_kwargs),  mimetype='text/event-stream')
     
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
@@ -329,7 +301,6 @@ async def run_answering () -> str:
 
 
 if __name__ == '__main__':
-    isDesktopAlive = True
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 5501
     app.run(host='0.0.0.0', port=port, processes=1, threaded=True)
 
