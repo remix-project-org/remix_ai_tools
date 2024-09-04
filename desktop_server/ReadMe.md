@@ -13,7 +13,6 @@ python -m venv desktop_venv
 source desktop_venv/bin/activate
 pip install -r requirements.txt
 CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.88 --force-reinstall --no-cache-dir
-pip install -r requirements.txt 
 ```
 
 on mac arm devices
