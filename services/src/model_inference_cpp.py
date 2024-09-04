@@ -24,7 +24,7 @@ async def run_code_completion(
     max_new_tokens: int = 1024,
     temperature: float = 0.1,
     top_p: float = 0.9,
-    top_k: int = 30) -> Iterator[str]:
+    top_k: int = 30):
     
     try:
         prompt = context_code #get_cocom_prompt(message=comment, context=context_code)
@@ -72,7 +72,7 @@ async def run_code_generation(
         with lock:
             outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        text = get_string_between(text, "```", "```") if '```' in text else text
+        # text = get_string_between(text, "```", "```") if '```' in text else text
         return text
     except Exception as ex:
         print('ERROR - Code generation', ex)
@@ -166,6 +166,7 @@ async def run_contract_generation(
         if model_name == "deepseek": 
             text = '\n'.join(text.splitlines()[1:]) # remove generated solidity prefix
 
+        print(text)
         if compile.run(generated_contract=text):
             return text
         else:
@@ -194,7 +195,7 @@ async def run_answering(
     top_k: int = 50) -> str:
 
     try:
-        prompt, links = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
+        prompt = get_answer_prompt(message=prompt) #get_cocom_prompt(message=comment, context=context_code)
         
         print('INFO - Solidity answering')
         generate_kwargs = dict(

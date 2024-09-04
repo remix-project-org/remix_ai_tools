@@ -11,3 +11,4 @@ models
 **/**.csv
 **/**.json
 .vscode/
+**/desktop_venv
