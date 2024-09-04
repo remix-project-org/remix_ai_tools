@@ -29,7 +29,7 @@ First install node js and then run
 ```bash
 cd services
 yarn install 
-git fetch && git pull && MODEL=deepseek TOKENIZERS_PARALLELISM=true gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 3 --threads 64 --timeout 600
+git fetch && git pull && MODEL=llama3_1 TOKENIZERS_PARALLELISM=true gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 3 --threads 64 --timeout 600
 ```
 Here is the list of supported models
 * llama13b - default

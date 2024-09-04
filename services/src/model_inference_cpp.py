@@ -166,7 +166,6 @@ async def run_contract_generation(
         if model_name == "deepseek": 
             text = '\n'.join(text.splitlines()[1:]) # remove generated solidity prefix
 
-        print(text)
         if compile.run(generated_contract=text):
             return text
         else:
