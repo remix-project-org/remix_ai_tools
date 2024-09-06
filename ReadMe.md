@@ -43,3 +43,10 @@ cd experiments
 locust -f load_test.py  -u 10 -r 5 -t 5m --html report.html
 ```
 
+## Curl test
+```
+ curl --connect-timeout 1 -m 5 -H 'Content-Type: application/json' \
+    -d '{"data":["pragma solidity 0.8.0 //function add 3 numbers\n", "", false,200,1,0.8,50]}' \
+    -X POST http://0.0.0.0:7861/ai/api/code_completion
+```
+

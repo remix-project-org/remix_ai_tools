@@ -1,6 +1,0 @@
-build
-dist
-**/*.spec
-**/*.DS_Store
-**/desktop_env
-desktop_env
