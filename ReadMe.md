@@ -13,8 +13,8 @@ This service provides the endpoint for code completion at `localhost:7860`
 
 Run 
 ```bash
-cd code_completion
-git fetch && git pull && TOKENIZERS_PARALLELISM=true gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7860 --access-logfile - --workers 4 --threads 1 --timeout 600
+cd src/code_completion
+git fetch && git pull && TOKENIZERS_PARALLELISM=true gunicorn src/services/main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7860 --access-logfile - --workers 4 --threads 1 --timeout 600
 ```
 to start the multiworker service.
 
