@@ -19,7 +19,7 @@ insertion_model = Llama(
   model_path=insertsion_model_path, 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=DEFAULT_CONTEXT_SIZE*15,
+  n_ctx=DEFAULT_CONTEXT_SIZE*10,
   verbose=False
 )
 
@@ -47,7 +47,7 @@ async def run_code_completion(
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            #stopping_criteria=stopping_criteria
+            stopping_criteria=stopping_criteria
         )
 
         with lock:

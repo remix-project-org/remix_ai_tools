@@ -12,3 +12,5 @@ models
 **/**.json
 .vscode/
 **/desktop_venv
+**/imgs
+**/.DS_Store
