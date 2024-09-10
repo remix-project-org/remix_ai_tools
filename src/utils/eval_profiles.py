@@ -11,14 +11,19 @@ def analyze_csv(file_path):
     with open(file_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            data.append({
-                'datetime': datetime.strptime(row['datetime'], '%Y-%m-%dT%H:%M:%S.%f'),
-                'endpoint': row['endpoint'],
-                'method': row['method'],
-                'total_request_time': float(row['total_request_time']),
-                'llm_duration': float(row['llm_duration']),
-                'llm_average_duration': float(row['llm_average_duration'])
-            })
+            try:
+                data.append({
+                    'datetime': datetime.strptime(row['datetime'], '%Y-%m-%dT%H:%M:%S.%f'),
+                    'endpoint': row['endpoint'],
+                    'method': row['method'],
+                    'total_request_time': float(row['total_request_time']),
+                    'llm_duration': float(row['llm_duration']),
+                    'llm_average_duration': float(row['llm_average_duration'])
+                })
+            except Exception as e:
+                print(f"Error reading row: {row}")
+                print(e)
+                continue
 
     # Basic statistics
     total_requests = len(data)
