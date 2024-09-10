@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 from statistics import mean, median, stdev
+from collections import defaultdict
 import argparse
 
 parser = argparse.ArgumentParser(description="Analyze a CSV file containing request profiling data.")
@@ -60,6 +61,29 @@ def analyze_csv(file_path):
         print(f"  {endpoint}:")
         print(f"    Total requests: {len(endpoint_data)}")
         print(f"    Average request time: {mean(row['total_request_time'] for row in endpoint_data):.3f} seconds")
+
+    # Daily Total Request Analysis
+    print("\nDaily Total Request Analysis:")
+    daily_requests = defaultdict(int)
+    for row in data:
+        date = row['datetime'].date()
+        daily_requests[date] += 1
+
+    for date, count in sorted(daily_requests.items()):
+        print(f"  {date}: {count} requests")
+
+    # Daily Total Request Analysis per Endpoint
+    print("\nDaily Total Request Analysis per Endpoint:")
+    daily_endpoint_requests = defaultdict(lambda: defaultdict(int))
+    for row in data:
+        date = row['datetime'].date()
+        endpoint = row['endpoint']
+        daily_endpoint_requests[endpoint][date] += 1
+
+    for endpoint in sorted(daily_endpoint_requests.keys()):
+        print(f"  {endpoint}:")
+        for date, count in sorted(daily_endpoint_requests[endpoint].items()):
+            print(f"    {date}: {count} requests")
 
 if __name__ == "__main__":
     args = parser.parse_args()
