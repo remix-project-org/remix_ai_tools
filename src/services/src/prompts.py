@@ -61,7 +61,7 @@ def determine_model():
 def apply_generation_template(sys, msg, model: SupportedModel):
     if model== SupportedModel.llama3_1:
         return f'''<|start_header_id|>system<|end_header_id|>
-        {sys}.<|eot_id|>
+        {sys}<|eot_id|>
         <|start_header_id|>user<|end_header_id|>
         {msg}<|eot_id|>
         <|start_header_id|>assistant<|end_header_id|>'''

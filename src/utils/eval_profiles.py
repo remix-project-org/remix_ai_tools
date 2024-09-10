@@ -3,6 +3,7 @@ from datetime import datetime
 from statistics import mean, median, stdev
 from collections import defaultdict
 import argparse
+from server_metrics import generate_metric_images
 
 parser = argparse.ArgumentParser(description="Analyze a CSV file containing request profiling data.")
 parser.add_argument("file_path", type=str, help="Path to the CSV file to analyze", default="services/profile.csv")
@@ -89,3 +90,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     file_path = args.file_path
     analyze_csv(file_path)
+    generate_metric_images(file_path)
