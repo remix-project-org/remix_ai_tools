@@ -14,7 +14,7 @@ This service provides the endpoint for code completion at `localhost:7860`
 Run 
 ```bash
 cd src/code_completion
-git fetch && git pull && TOKENIZERS_PARALLELISM=true gunicorn src/services/main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7860 --access-logfile - --workers 4 --threads 1 --timeout 600
+git fetch && git pull && TOKENIZERS_PARALLELISM=true gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7860 --access-logfile - --workers 4 --threads 1 --timeout 600
 ```
 to start the multiworker service.
 
@@ -50,3 +50,9 @@ locust -f load_test.py  -u 10 -r 5 -t 5m --html report.html
     -X POST http://0.0.0.0:7861/ai/api/code_completion
 ```
 
+
+```
+ curl --connect-timeout 1 -m 5 -H 'Content-Type: application/json' \
+    -d '{"data":["pragma solidity 0.8.0\n", "", false,200,1,0.8,50]}' \
+    -X POST http://0.0.0.0:7860/ai/api/code_completion
+```
