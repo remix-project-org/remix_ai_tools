@@ -30,4 +30,4 @@ pyinstaller --collect-all llama_cpp --onefile InferenceServer.py
 nvidia GPUs
 
 ## API Docs
-For detailed API documentation, please refer to the [API.md](API.md) file.
+For detailed API documentation, please refer to the [API.md](API.md) file
