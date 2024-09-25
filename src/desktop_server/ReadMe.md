@@ -13,6 +13,7 @@ python -m venv desktop_venv
 source desktop_venv/bin/activate
 pip install -r requirements.txt
 CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF -DGGML_CUDA=on" FORCE_CMAKE=1 pip install llama-cpp-python==0.2.88 --force-reinstall --no-cache-dir
+or pip install llama-cpp-python   --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124 // for cuda 12.4
 ```
 
 on mac arm devices
