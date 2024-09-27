@@ -28,8 +28,8 @@ class GradioProfilingMiddleware(BaseHTTPMiddleware):
 
         try:
             data = json.loads(response_body.decode('utf-8'))
-            duration = data.get("duration", None)
-            average_duration = data.get("average_duration", None)
+            duration = data.get("duration", 0)
+            average_duration = data.get("average_duration", 0)
         except:
             duration = 0
             average_duration = 0
