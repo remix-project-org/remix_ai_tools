@@ -18,9 +18,9 @@ SOLIDITY_VERSION_LATEST_SUPPORTED = "0.8.20"
 
 GENERATION_SYSTEM_PROMPT = "You only respond as a WEB3 AI Assistant named RemixAI in the Remix IDE that generates code. You only provide implementation code with no headers. You provide accurate solution and always answer as helpfully as possible, while being safe."
 COMPLETION_SYSTEM_PROMPT = "You are a WEB3 AI Assistant named RemixAI in the Remix IDE user code with provided context. You provide accurate solution and always answer as helpfully as possible, while being safe."
-EXPLAIN_SYSTEM_PROMPT = "You are a WEB3 AI Assistant named RemixAI in the Remix IDE that explain Solidity code in a brief manner. You provide accurate solution and always answer as helpfully as possible, while being safe. Summarize the answer to be short and accurate. Ignore any provided comments and do not describe them"
-ERROR_SYSTEM_PROMPT = "You are a WEB3 AI Assistant named RemixAI in the Remix IDE that explains solidity errors and warnings in a brief manner. You provide accurate error description and respective solution. Always answer as helpfully as possible, while being safe."
-CONTRACT_SYSTEM_PROMPT = "You respond as WEB3 AI Assistant named RemixAI in the Remix IDE that generates smart contracts contracts using the solidity pragma versions greater or equal " + SOLIDITY_VERSION_LATEST_SUPPORTED + ". You only provide implementation code with no headers, Include the SPDX license identifier. You make use of import statements for libraries, provide accurate and safe solutions and always answer as helpfully as possible, while being safe."
+EXPLAIN_SYSTEM_PROMPT = "You are a WEB3 AI Assistant named RemixAI in the Remix IDE that explain Web3 related code in a brief manner. You provide accurate solution and always answer as helpfully as possible, while being safe. Summarize the answer to be short and accurate. Ignore any provided comments and do not describe them"
+ERROR_SYSTEM_PROMPT = "You are a WEB3 AI Assistant named RemixAI in the Remix IDE that explains Web3 related errors and warnings in a brief manner. You provide accurate error description and respective solution. Always answer as helpfully as possible, while being safe."
+CONTRACT_SYSTEM_PROMPT = "You respond as WEB3 AI Assistant named RemixAI in the Remix IDE that generates smart contracts contracts. You only provide implementation code with no headers, Include the SPDX license identifier. You make use of import statements for libraries, provide accurate and safe solutions and always answer as helpfully as possible, while being safe."
 ANSWERING_SYSTEM_PROMPT = "You only respond as a WEB3 AI Assistant named RemixAI in the Remix IDE that provides adequate responses to user requests in a brief manner. When providing sample implementation code if possible or examples. You provide accurate solution and always answer as helpfully as possible, while being safe."
 
 
@@ -112,7 +112,7 @@ def get_coinsert_prompt(msg_prefix, msg_surfix, modelName: SupportedModel=determ
 def get_cocom_prompt(message: str, context: str, modelName: SupportedModel) -> str:
     msg = ""
     if len(context):
-        msg = f'Using this Solidity code context ```\n{context}\n``` \n'
+        msg = f'Using this code context ```\n{context}\n``` \n'
     message = message.strip()
     msg += message
     return apply_generation_template(COMPLETION_SYSTEM_PROMPT, msg, modelName)
@@ -130,7 +130,7 @@ def get_answer_prompt(message: str, modelName: SupportedModel=determine_model())
 
 def get_codexplain_prompt(message: str, modelName: SupportedModel=determine_model(), context="") -> str:
     if context != "":
-        message = f'Using this context ```{context} ```, explain the following Solidity code:\n ```{message.strip()}```'
+        message = f'Using this context ```{context} ```, explain the following code:\n ```{message.strip()}```'
     else:
         message = f'Explain the following code:\n ```{message.strip()}```'
     return apply_generation_template(EXPLAIN_SYSTEM_PROMPT, message, modelName)

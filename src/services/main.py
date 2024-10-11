@@ -13,8 +13,6 @@ if servertype == 'flask':
     app.add_url_rule( '/code_completion', 'code_completion', code_completion, methods = ['POST'])
     app.add_url_rule( '/code_insertion', 'code_insertion', code_insertion, methods = ['POST'])
 
-    print('Done adding rule')
-
 @app.get("/")
 def read_main():
     print("Welcome to REMIX-IDE AI services")
