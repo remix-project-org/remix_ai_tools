@@ -19,18 +19,6 @@ model = Llama(
 
 lock = threading.Lock()
 
-@app.before_request
-def before_request_middleware():
-    g.request_start_time = time.time()
-    print(f"Incoming request: {request.method} {request.path}")
-
-@app.after_request
-def after_request_middleware(response):
-    if hasattr(g, 'request_start_time'):
-        elapsed = time.time() - g.request_start_time
-        print(f"Request processed in {elapsed:.5f} seconds")
-    return response
-
 def generate(stream_result, generate_kwargs):
     with lock:
         if stream_result:
