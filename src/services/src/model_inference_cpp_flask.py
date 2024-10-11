@@ -42,7 +42,7 @@ def generate(stream_result, generate_kwargs):
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
             # print('RESULT:', text)
-            yield  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
+            return  f"{json.dumps({'generatedText': text, 'isGenerating': False})}"
 
 
 async def code_explaining(): 
