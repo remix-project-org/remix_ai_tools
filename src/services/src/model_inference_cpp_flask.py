@@ -108,7 +108,7 @@ async def code_explaining():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return Response(generate(stream_result, generate_kwargs))
+            return Response(generate(generate_kwargs))
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
@@ -136,7 +136,7 @@ async def solidity_answer():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return Response(generate(stream_result, generate_kwargs))
+            return Response(generate(generate_kwargs))
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
@@ -165,7 +165,7 @@ async def error_explaining():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return Response(generate(stream_result, generate_kwargs))
+            return Response(generate(generate_kwargs))
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
