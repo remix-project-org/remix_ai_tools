@@ -112,7 +112,7 @@ async def code_explaining():
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response( text )
+            return  Response( [text] )
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'error': ex})}")
