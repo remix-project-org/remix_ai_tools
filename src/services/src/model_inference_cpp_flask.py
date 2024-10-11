@@ -37,12 +37,13 @@ def unpack_req_params(data):
 
         if arr_obj is not None:
             # unpack payload array
+            print(arr_obj)
             prompt = arr_obj[0]
             stream_result = arr_obj[1]
             max_new_tokens = arr_obj[2]
             temperature =float(arr_obj[3])
             top_p = float(arr_obj[3])
-            top_k = float(arr_obj[4])
+            top_k = int(arr_obj[4])
             context = float(arr_obj[5])
             repeat_penalty= float(data.get('repeat_penalty', 1.2))
             frequency_penalty= float(data.get('frequency_penalty', 0.2))
@@ -91,7 +92,8 @@ async def code_explaining():
         print('INFO - Code Explaining')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-
+        for l in unpack_req_params(data):
+            print(l, '  -> ', type(l))
         prompt = get_codexplain_prompt(prompt, context=context)
         generate_kwargs = dict(
             prompt=prompt,
