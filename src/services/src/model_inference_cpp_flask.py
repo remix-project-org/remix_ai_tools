@@ -112,7 +112,7 @@ async def code_explaining():
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response( [text] )
+            return  Response(f"{json.dumps({'data': [text]})}")
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'error': ex})}")
@@ -140,7 +140,8 @@ async def solidity_answer():
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response( text )
+            return  Response(f"{json.dumps({'data': [text]})}")
+
 
     except Exception as ex:
         print('ERROR - Solidity Answer', ex)
@@ -168,7 +169,7 @@ async def error_explaining():
         else:
             outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response( text )
+            return  Response(f"{json.dumps({'data': [text]})}")
         
     except Exception as ex:
         print('ERROR - Error Explaining')
