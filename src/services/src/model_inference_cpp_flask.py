@@ -65,6 +65,7 @@ def unpack_req_params(data):
             
 
     except Exception as ex:
+        print(ex)
         prompt = data.get('prompt', "No input")
         context = data.get('context', "")
         stream_result = data.get('stream_result', False)
