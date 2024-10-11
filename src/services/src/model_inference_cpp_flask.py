@@ -44,7 +44,7 @@ def unpack_req_params(data):
             temperature =float(arr_obj[3])
             top_p = float(arr_obj[4])
             top_k = int(arr_obj[5])
-            context = float(arr_obj[6])
+            context = arr_obj[6]
             repeat_penalty= float(data.get('repeat_penalty', 1.2))
             frequency_penalty= float(data.get('frequency_penalty', 0.2))
             presence_penalty= float(data.get('presence_penalty', 0.2))
