@@ -51,19 +51,25 @@ async def code_explaining():
         data = request.json
         # parse all params
         code = data.get('prompt', "")
+        print('prompt', code)
 
         context = data.get('context', "")
+        print('context', context)
         stream_result = data.get('stream_result', False)
+        print('stream_result', stream_result)
         max_new_tokens = int(data.get('max_new_tokens', 20))
+        print('max_new_tokens', max_new_tokens)
         temperature = float(data.get('temperature', 0.8))
+        print('temperature', temperature)
         top_p = float(data.get('top_p', 0.9))
+        print('top_p', top_p)
         top_k = int(data.get('top_k', 50))
+        print('top_k', top_k)
         repeat_penalty= float(data.get('repeat_penalty', 1.2))
         frequency_penalty= float(data.get('frequency_penalty', 0.2))
         presence_penalty= float(data.get('presence_penalty', 0.2))
 
         prompt = get_codexplain_prompt(code, context=context)
-        print('INFO - Code Explaining') 
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
