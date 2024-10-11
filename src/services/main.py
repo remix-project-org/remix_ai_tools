@@ -7,11 +7,11 @@ from src.model_inference_cpp_flask import code_completion, code_explaining, code
 servertype = os.getenv("SERVERTYPE", 'fastapi')
 
 if servertype == 'flask':
-    app.add_url_rule( '/code_explaining', 'code_explaining', code_explaining, methods = ['POST'])
-    app.add_url_rule( '/solidity_answer', 'solidity_answer', solidity_answer, methods = ['POST'])
-    app.add_url_rule( '/error_explaining', 'error_explaining', error_explaining, methods = ['POST'])
-    app.add_url_rule( '/code_completion', 'code_completion', code_completion, methods = ['POST'])
-    app.add_url_rule( '/code_insertion', 'code_insertion', code_insertion, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_explaining', 'code_explaining', code_explaining, methods = ['POST'])
+    app.add_url_rule( '/ai/api/solidity_answer', 'solidity_answer', solidity_answer, methods = ['POST'])
+    app.add_url_rule( '/ai/api/error_explaining', 'error_explaining', error_explaining, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_completion', 'code_completion', code_completion, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_insertion', 'code_insertion', code_insertion, methods = ['POST'])
 
 @app.get("/")
 def read_main():
