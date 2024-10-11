@@ -37,13 +37,13 @@ def unpack_req_params(data):
 
         if arr_obj is None:
             # unpack payload array
-            prompt = data[0]
-            stream_result = data[1]
-            max_new_tokens = data[2]
-            temperature = data[3]
-            top_p = data[3]
-            top_k = data[4]
-            context = data[5]
+            prompt = arr_obj[0]
+            stream_result = arr_obj[1]
+            max_new_tokens = arr_obj[2]
+            temperature = arr_obj[3]
+            top_p = arr_obj[3]
+            top_k = arr_obj[4]
+            context = arr_obj[5]
             repeat_penalty= float(data.get('repeat_penalty', 1.2))
             frequency_penalty= float(data.get('frequency_penalty', 0.2))
             presence_penalty= float(data.get('presence_penalty', 0.2))
