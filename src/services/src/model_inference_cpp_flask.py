@@ -40,6 +40,7 @@ def unpack_req_params(data):
             prompt = arr_obj[0]
             stream_result = arr_obj[1]
             max_new_tokens = arr_obj[2]
+            max_new_tokens = 1000 if max_new_tokens>1000 else max_new_tokens
             temperature =float(arr_obj[3])
             top_p = float(arr_obj[4])
             top_k = int(arr_obj[5]) if len(arr_obj)-1>4 else 50
@@ -54,6 +55,7 @@ def unpack_req_params(data):
             context = data.get('context', "")
             stream_result = data.get('stream_result', False)
             max_new_tokens = int(data.get('max_new_tokens', 20))
+            max_new_tokens = 1000 if max_new_tokens>1000 else max_new_tokens
             temperature = float(data.get('temperature', 0.8))
             top_p = float(data.get('top_p', 0.9))
             top_k = int(data.get('top_k', 50))
