@@ -1,7 +1,6 @@
 import os, sys
 sys.path.append('..')
 from src.entry import app
-from utils.middleware_logging import GradioProfilingMiddleware
 from src.model_inference_cpp_flask import code_completion, code_explaining, code_insertion, error_explaining, solidity_answer
 
 servertype = os.getenv("SERVERTYPE", 'fastapi')

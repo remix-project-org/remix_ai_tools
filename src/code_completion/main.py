@@ -1,25 +1,20 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from deploy_service import gr, gr_app
-from utils.middleware_logging import GradioProfilingMiddleware
+import os, sys
+sys.path.append('..')
+from src.entry import app
 
-from time import time
+from src.model_inference_cpp import run_code_completion, run_code_generation, run_code_insertion
+servertype = os.getenv("SERVERTYPE", 'fastapi')
 
-app = FastAPI()
+if servertype == 'flask':
+    app.add_url_rule( '/ai/api/code_insertion', 'code_insertion', run_code_insertion, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_generation', 'code_generation', run_code_generation, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_completion', 'code_completion', run_code_completion, methods = ['POST'])
+    print('added all rules!')
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.add_middleware(GradioProfilingMiddleware)
-
-@app.get("/")
+@app.get("/ai/api")
 def read_main():
+    print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
 
-app = gr.mount_gradio_app(app, gr_app, path="/ai")
+if __name__ == "__main__":
+    app.run()
