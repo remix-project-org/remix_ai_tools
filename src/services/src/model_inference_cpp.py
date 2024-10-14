@@ -4,7 +4,7 @@ from src.llm_output_parser import get_string_between
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens
-import threading
+import threading, json
 
 model = Llama(
   model_path=model_path, 
@@ -15,7 +15,6 @@ model = Llama(
 )
 
 lock = threading.Lock()
-
 
 async def run_code_completion(
     context_code: str,

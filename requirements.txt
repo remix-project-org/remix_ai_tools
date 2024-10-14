@@ -20,3 +20,4 @@ asyncpg
 sqlalchemy[asyncio]
 sentence-transformers==2.7.0
 pgvector==0.2.5 
+flask[async]
