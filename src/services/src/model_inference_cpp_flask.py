@@ -109,7 +109,8 @@ async def code_explaining():
         if stream_result:
             return Response(generate(generate_kwargs))
         else:
-            outputs = model(**generate_kwargs)
+            with lock:
+                outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
             return  Response(f"{json.dumps({'data': [text]})}")
     except Exception as ex:
@@ -137,7 +138,8 @@ async def solidity_answer():
         if stream_result:
             return Response(generate(generate_kwargs))
         else:
-            outputs = model(**generate_kwargs)
+            with lock:
+                outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
             return  Response(f"{json.dumps({'data': [text]})}")
 
@@ -166,7 +168,8 @@ async def error_explaining():
         if stream_result:
             return Response(generate(generate_kwargs))
         else:
-            outputs = model(**generate_kwargs)
+            with lock:
+                outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
             return  Response(f"{json.dumps({'data': [text]})}")
         
@@ -202,7 +205,8 @@ async def code_insertion():
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
         )
-        outputs = model(**generate_kwargs)
+        with lock:
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"]
         return  Response(f"{json.dumps({'generatedText': text, 'isGenerating': False})}")
     except Exception as ex:
@@ -229,7 +233,8 @@ async def code_completion():
             presence_penalty=presence_penalty,
             stopping_criteria=stopping_criteria
         )
-        outputs = model(**generate_kwargs)
+        with lock:
+            outputs = model(**generate_kwargs)
         text = outputs["choices"][0]["text"]
         return  Response(f"{json.dumps({'generatedText': text, 'isGenerating': False})}")
     except Exception as ex:
