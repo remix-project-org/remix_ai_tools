@@ -100,6 +100,7 @@ async def run_code_completion() -> str:
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
         if len(context) > 1: # use context as surfix
+            print('INFO: using code insertion in completion')
             prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=context)
         
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
