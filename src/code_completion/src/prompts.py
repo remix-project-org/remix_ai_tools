@@ -13,7 +13,7 @@ def get_cogen_prompt(message: str, is_model_deep_seek: bool) -> str:
     return text
 
 def get_coinsert_prompt(msg_prefix, msg_surfix):
-    return "<｜fim▁begin｜>" + msg_prefix + "\n" +  "<｜fim▁hole｜>\n" + msg_surfix + " <｜fim▁end｜>"
+    return "<｜fim▁begin｜>" + msg_prefix +  "<｜fim▁hole｜>" + msg_surfix + " <｜fim▁end｜>"
 
 # def get_RAG_results(user_prompt):
 #     try:
