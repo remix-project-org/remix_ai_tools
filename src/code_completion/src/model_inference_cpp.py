@@ -20,7 +20,7 @@ insertion_model = Llama(
   model_path=insertsion_model_path, 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=DEFAULT_CONTEXT_SIZE*10,
+  n_ctx=DEFAULT_CONTEXT_SIZE*6,
   verbose=False
 )
 
@@ -98,7 +98,10 @@ async def run_code_completion() -> str:
         r_obj_type = True if data.get('data', None) == None else False
         print('Using json object request:', r_obj_type)
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-        # prompt = get_cocom_prompt(message=context_code, is_model_deep_seek=use_deep_seek)
+        
+        if len(context) > 1: # use context as surfix
+            prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=context)
+        
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
         print('INFO - Code Completion')
@@ -132,7 +135,7 @@ async def run_code_insertion() -> str:
 
         # No stopping criteria as the in filling pushes in what is good
         # TODO: only allow 1 artifact generation: example 1 function, 1 contract, 1 struct, 1 interface, 1 for loop or similar. single {}
-        # stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
+        stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
 
         print('INFO - Code Insertion')
         generate_kwargs = dict(
@@ -141,7 +144,7 @@ async def run_code_insertion() -> str:
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            #stopping_criteria=stopping_criteria
+            stopping_criteria=stopping_criteria
         )
 
         with lock:
