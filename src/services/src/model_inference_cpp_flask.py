@@ -14,7 +14,7 @@ model = Llama(
   n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=3500*4, 
+  n_ctx=3500*5, 
 )
 
 lock = threading.Lock()
@@ -95,6 +95,8 @@ async def code_explaining():
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = get_codexplain_prompt(prompt, context=context)
+        max_new_tokens = 3000
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -122,6 +124,7 @@ async def solidity_answer():
         print('INFO - solidity Answer')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
+        max_new_tokens = 3000
         
         prompt = get_answer_prompt(prompt)
         generate_kwargs = dict(
@@ -153,7 +156,8 @@ async def error_explaining():
         print('INFO - Error Explaining')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-        
+        max_new_tokens = 3000
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
