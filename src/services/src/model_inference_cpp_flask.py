@@ -85,7 +85,7 @@ def generate(generate_kwargs):
         for outputs in model(**generate_kwargs):
             text = outputs["choices"][0]["text"]
             yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
-        return f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
+        yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
 
 
 
