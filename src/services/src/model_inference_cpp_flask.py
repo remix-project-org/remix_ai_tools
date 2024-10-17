@@ -14,7 +14,7 @@ model = Llama(
   n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=3500*3, 
+  n_ctx=3500*4, 
 )
 
 lock = threading.Lock()

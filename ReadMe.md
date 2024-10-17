@@ -14,7 +14,7 @@ This service provides the endpoint for code completion at `localhost:7860`
 Run 
 ```bash
 cd src/code_completion
-git fetch && git pull && TOKENIZERS_PARALLELISM=true SERVERTYPE=flask  gunicorn --workers=1 --bind=0.0.0.0:7851 main:app --access-logfile - --workers 4 --threads 1 --timeout 600
+git fetch && git pull && TOKENIZERS_PARALLELISM=true SERVERTYPE=flask  gunicorn --workers=1 --bind=0.0.0.0:7851 main:app --access-logfile - --workers 6 --threads 1 --timeout 600
 ```
 to start the multiworker service.
 
