@@ -154,7 +154,7 @@ async def error_explaining():
         print('INFO - Error Explaining')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-
+        prompt = get_codexplain_prompt(prompt, context=context)
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
