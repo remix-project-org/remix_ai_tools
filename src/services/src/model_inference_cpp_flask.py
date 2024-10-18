@@ -108,7 +108,7 @@ async def code_explaining():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return Response(generate(generate_kwargs))
+            return app.response_class(generate(generate_kwargs), content_type='application/json')
         else:
             with lock:
                 outputs = model(**generate_kwargs)
@@ -137,7 +137,7 @@ async def solidity_answer():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return Response(generate(generate_kwargs))
+            return app.response_class(generate(generate_kwargs), content_type='application/json')
         else:
             with lock:
                 outputs = model(**generate_kwargs)
@@ -167,7 +167,7 @@ async def error_explaining():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return Response(generate(generate_kwargs))
+            return app.response_class(generate(generate_kwargs), content_type='application/json')
         else:
             with lock:
                 outputs = model(**generate_kwargs)
