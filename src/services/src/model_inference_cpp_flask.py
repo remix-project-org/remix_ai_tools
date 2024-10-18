@@ -84,8 +84,8 @@ def generate(generate_kwargs):
     with lock:
         for outputs in model(**generate_kwargs):
             text = outputs["choices"][0]["text"]
-            yield Response(f"{json.dumps({'generatedText': text, 'isGenerating': True})}")
-        yield Response(f"{json.dumps({'generatedText': '', 'isGenerating': False})}")
+            yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
+        yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
 
 
 
@@ -108,7 +108,7 @@ async def code_explaining():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return generate(generate_kwargs)
+            return Response(generate(generate_kwargs))
         else:
             with lock:
                 outputs = model(**generate_kwargs)
@@ -137,7 +137,7 @@ async def solidity_answer():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return generate(generate_kwargs)
+            return Response(generate(generate_kwargs))
         else:
             with lock:
                 outputs = model(**generate_kwargs)
@@ -167,7 +167,7 @@ async def error_explaining():
             presence_penalty=presence_penalty,
         )
         if stream_result:
-            return generate(generate_kwargs)
+            return Response(generate(generate_kwargs))
         else:
             with lock:
                 outputs = model(**generate_kwargs)
