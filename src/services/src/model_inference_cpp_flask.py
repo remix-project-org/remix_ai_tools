@@ -142,7 +142,7 @@ async def solidity_answer():
             with lock:
                 outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response(f"{json.dumps({'data': [text]})}")
+            return  Response(f"{json.dumps({'data': [text], 'generatedText':text})}")
 
 
     except Exception as ex:
