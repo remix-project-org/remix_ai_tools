@@ -57,6 +57,12 @@ def determine_model():
     else:
         return SupportedModel.any
     
+schemaPromptGenerator = lambda user_prompt: [{
+            "role": "system",
+            "content": "You are a WEB3 assistant that outputs in JSON with `Answer`, `Reason` and `Suggestion`.",
+        },
+        {"role": "user", "content": user_prompt}
+    ]
 
 def apply_generation_template(sys, msg, model: SupportedModel):
     if model== SupportedModel.llama3_1:

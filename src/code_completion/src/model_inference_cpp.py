@@ -4,7 +4,7 @@ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 import threading, json
-from flask import request, Response, g
+from flask import request, Response
 
 DEFAULT_CONTEXT_SIZE = 2048
 use_deep_seek = True

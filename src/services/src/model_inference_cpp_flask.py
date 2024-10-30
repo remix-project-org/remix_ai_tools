@@ -87,8 +87,6 @@ def generate(generate_kwargs):
             yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
         yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
 
-
-
 async def code_explaining(): 
     try:
         print('INFO - Code Explaining')
@@ -113,7 +111,7 @@ async def code_explaining():
             with lock:
                 outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response(f"{json.dumps({'data': [text]})}")
+            return  Response(f"{json.dumps({'data': [text], 'generatedText':text})}")
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'error': ex})}")
@@ -172,7 +170,7 @@ async def error_explaining():
             with lock:
                 outputs = model(**generate_kwargs)
             text = outputs["choices"][0]["text"]
-            return  Response(f"{json.dumps({'data': [text]})}")
+            return  Response(f"{json.dumps({'data': [text], 'generatedText':text})}")
         
     except Exception as ex:
         print('ERROR - Error Explaining')
@@ -241,3 +239,45 @@ async def code_completion():
     except Exception as ex:
         print('ERROR - Code Completion', ex)
         return Response(f"{json.dumps({'error': ex})}")
+
+
+# Schemas endpoints
+
+def vulnerability_check():
+    try:
+        print('INFO: Vulnerability check')
+        data = request.json
+        (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
+        prompt = schemaPromptGenerator(prompt)
+        
+        response_format={
+            "type": "json_object",
+            "schema": {
+                "type": "object",
+                "properties": {"Answer": {"type": "string"},
+                               "Reason": {"type": "string"},
+                               "Suggestion": {"type": "string"}
+                               },
+                "required": ["Answer", "Reason", "Suggestion"]
+            }
+        }
+        chat_generate_kwargs = dict(messages=prompt, 
+                                    response_format=response_format, 
+                                    max_tokens=max_new_tokens,
+                                    top_p=top_p, top_k=top_k, 
+                                    temperature=temperature,
+                                    repeat_penalty=repeat_penalty, 
+                                    frequency_penalty=frequency_penalty,
+                                    presence_penalty=presence_penalty
+        )
+
+        # No streaming support
+        report = model.create_chat_completion(messages=prompt, response_format=response_format, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
+        if stream_result:
+            return  Response(f"{json.dumps({'generatedText':report['choices'][0]['message']['content'], 'isGenerating': False})}")
+        else:
+            return  Response(f"{json.dumps({'data': [report['choices'][0]['message']['content']], 'generatedText':report['choices'][0]['message']['content']})}")
+    except Exception as ex:
+        print('ERROR -Vulnerability check', ex)
+        return Response(f"{json.dumps({'error': 'error'})}")
+    
