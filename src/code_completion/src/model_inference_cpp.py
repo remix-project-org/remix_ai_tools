@@ -6,7 +6,7 @@ from llama_cpp import Llama, StoppingCriteriaList
 import threading, json
 from flask import request, Response
 
-DEFAULT_CONTEXT_SIZE = 2048
+DEFAULT_CONTEXT_SIZE = 2148
 use_deep_seek = True
 # completion_model = Llama(
 #   model_path=completion_model_path, 
