@@ -97,16 +97,13 @@ async def run_code_completion() -> str:
         data = request.json
         # return json obj if request body is json
         r_obj_type = True if data.get('data', None) == None else False
-        print('Using json object request:', r_obj_type)
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
         if len(context) > 1: # use context as surfix
-            print('INFO: using code insertion in completion')
             prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=context)
         
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
-        print('INFO - Code Completion')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -131,7 +128,6 @@ async def run_code_insertion() -> str:
     try:
         data = request.json
         r_obj_type = True if data.get('data', None) == None else False
-        print('Using json object request:', r_obj_type)
         (code_pfx, code_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx)
 
@@ -139,7 +135,6 @@ async def run_code_insertion() -> str:
         # TODO: only allow 1 artifact generation: example 1 function, 1 contract, 1 struct, 1 interface, 1 for loop or similar. single {}
         stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
 
-        print('INFO - Code Insertion')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
