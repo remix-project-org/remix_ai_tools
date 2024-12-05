@@ -1,26 +1,23 @@
+import os, sys
+sys.path.append('..')
+from src.entry import app
+from src.model_inference_cpp_flask import code_completion, code_explaining, code_insertion
+from src.model_inference_cpp_flask import error_explaining, solidity_answer, vulnerability_check
 
-from deploy_service import gr, gr_app
-from fastapi import FastAPI, Body
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from src.model_inference_cpp import *
-from utils.middleware_logging import GradioProfilingMiddleware
+servertype = os.getenv("SERVERTYPE", 'fastapi')
 
-app = FastAPI()
+if servertype == 'flask':
+    app.add_url_rule( '/ai/api/code_explaining', 'code_explaining', code_explaining, methods = ['POST'])
+    app.add_url_rule( '/ai/api/solidity_answer', 'solidity_answer', solidity_answer, methods = ['POST'])
+    app.add_url_rule( '/ai/api/error_explaining', 'error_explaining', error_explaining, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_completion', 'code_completion', code_completion, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_insertion', 'code_insertion', code_insertion, methods = ['POST'])
+    app.add_url_rule( '/ai/api/vulnerability_check', 'vulenerability_check', vulnerability_check, methods = ['POST'])
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.add_middleware(GradioProfilingMiddleware)
-
-@app.get("/")
+@app.get("/ai/api")
 def read_main():
+    print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
 
-app = gr.mount_gradio_app(app, gr_app, path="/ai")
+if __name__ == "__main__":
+    app.run()

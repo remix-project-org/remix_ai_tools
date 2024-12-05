@@ -1,25 +1,40 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from deploy_service import gr, gr_app
-from utils.middleware_logging import GradioProfilingMiddleware
+import os, sys
+sys.path.append('..')
+from src.entry import app
+import logging, time
+from flask import request, Response, g
+from src.model_inference_cpp import run_code_completion, run_code_generation, run_code_insertion
 
-from time import time
 
-app = FastAPI()
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+servertype = os.getenv("SERVERTYPE", 'fastapi')
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if servertype == 'flask':
+    app.add_url_rule( '/ai/api/code_insertion', 'code_insertion', run_code_insertion, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_generation', 'code_generation', run_code_generation, methods = ['POST'])
+    app.add_url_rule( '/ai/api/code_completion', 'code_completion', run_code_completion, methods = ['POST'])
+    print('added all rules!')
 
-app.add_middleware(GradioProfilingMiddleware)
-
-@app.get("/")
+@app.get("/ai/api")
 def read_main():
+    print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
 
-app = gr.mount_gradio_app(app, gr_app, path="/ai")
+@app.before_request
+def start_timer():
+    """Start the timer before processing a request."""
+    g.start_time = time.time()
+
+@app.after_request
+def log_response(response):
+    """Log the response time after processing a request."""
+    if hasattr(g, 'start_time'):
+        duration = time.time() - g.start_time
+        logger.info(f"Request: {request.method} {request.path} - Response time: {duration:.4f}s")
+        response.headers['X-Process-Time'] = str(duration)  # Add time to response headers
+    return response
+
+if __name__ == "__main__":
+    app.run()
