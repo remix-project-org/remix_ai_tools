@@ -16,7 +16,7 @@ model = Llama(
   verbose=False, 
   n_ctx=3500*6, 
 )
-
+EMPTY = ""
 lock = threading.Lock()
 
 @app.before_request
@@ -114,7 +114,7 @@ async def code_explaining():
             return  Response(f"{json.dumps({'data': [text], 'generatedText':text})}")
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
-        return Response(f"{json.dumps({'data': [text], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
 
 async def solidity_answer(): 
     try:
@@ -145,7 +145,7 @@ async def solidity_answer():
 
     except Exception as ex:
         print('ERROR - Solidity Answer', ex)
-        return Response(f"{json.dumps({'data': [""], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
 
 async def error_explaining():
     try:
@@ -174,7 +174,7 @@ async def error_explaining():
         
     except Exception as ex:
         print('ERROR - Error Explaining')
-        return Response(f"{json.dumps({'data': [""], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
 async def code_insertion(): 
     try:
@@ -210,7 +210,7 @@ async def code_insertion():
         return  Response(f"{json.dumps({'generatedText': text, 'isGenerating': False})}")
     except Exception as ex:
         print('ERROR - Code Insertion', ex)
-        return Response(f"{json.dumps({'data': [""], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
 async def code_completion(): 
     try:
@@ -238,7 +238,7 @@ async def code_completion():
         return  Response(f"{json.dumps({'generatedText': text, 'isGenerating': False})}")
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return Response(f"{json.dumps({'data': [""], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
 
 
 # Schemas endpoints
@@ -279,5 +279,5 @@ def vulnerability_check():
             return  Response(f"{json.dumps({'data': [report['choices'][0]['message']['content']], 'generatedText':report['choices'][0]['message']['content']})}")
     except Exception as ex:
         print('ERROR -Vulnerability check', ex)
-        return Response(f"{json.dumps({'data': [""], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
