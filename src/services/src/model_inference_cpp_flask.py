@@ -114,7 +114,7 @@ async def code_explaining():
             return  Response(f"{json.dumps({'data': [text], 'generatedText':text})}")
     except Exception as ex:
         print('ERROR - Code Explaining', ex)
-        return Response(f"{json.dumps({'data': [""], 'generatedText':""})}")
+        return Response(f"{json.dumps({'data': [text], 'generatedText':""})}")
 
 async def solidity_answer(): 
     try:
