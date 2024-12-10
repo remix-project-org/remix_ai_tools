@@ -1,4 +1,6 @@
 import code
+
+import test
 from src.prompts import *
 from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
@@ -116,6 +118,7 @@ async def run_code_completion() -> str:
         with lock:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        print('INFO - Code Completion', text)
         return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
         
     except Exception as ex:
@@ -147,6 +150,7 @@ async def run_code_insertion() -> str:
         with lock:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
+        print('INFO - Code Insertion', text)
         return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
     except Exception as ex:
         print('ERROR - Code Insertion', ex)
