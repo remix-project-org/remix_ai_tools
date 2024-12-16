@@ -24,7 +24,7 @@ CMAKE_ARGS="-DLLAMA_METAL_EMBED_LIBRARY=ON -DLLAMA_METAL=on -DBUILD_SHARED_LIBS=
 
 Run `pyinstaller` to create a target exec file
 ```
-pyinstaller --collect-all llama_cpp --onefile InferenceServer.py
+pyinstaller --collect-all llama_cpp --onefile RemixAIDesktopServer.py
 ```
 
 ## Supported GPUs
