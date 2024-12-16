@@ -9,14 +9,16 @@ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from flask import Flask, request, jsonify, Response, g
 
 app = get_app('flask')
+CONTEXT = 3500*6
 model = Llama(
   model_path=model_path, 
   n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
-  n_ctx=3500*6, 
+  n_ctx=CONTEXT
 )
 EMPTY = ""
+LARGE_CONTEXT = "High context size. Try reduce the request context size"
 lock = threading.Lock()
 
 @app.before_request
@@ -30,6 +32,12 @@ def after_request_middleware(response):
         elapsed = time.time() - g.request_start_time
         print(f"Request processed in {elapsed:.5f} seconds")
     return response
+
+def is_prompt_covered(prompt: str) -> int:
+    if len(model.tokenizer().encode(prompt)) > CONTEXT:
+        return False
+    return True
+
 
 def unpack_req_params(data):
     try:
@@ -94,6 +102,9 @@ async def code_explaining():
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = get_codexplain_prompt(prompt, context=context)
 
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -123,6 +134,10 @@ async def solidity_answer():
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
         prompt = get_answer_prompt(prompt)
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
+
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -153,6 +168,9 @@ async def error_explaining():
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = get_codexplain_prompt(prompt, context=context)
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -193,6 +211,9 @@ async def code_insertion():
         presence_penalty= float(data.get('presence_penalty', 0.2))
 
         prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx)
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -220,6 +241,9 @@ async def code_completion():
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(model.tokenizer())])
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
+
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
@@ -248,9 +272,11 @@ def vulnerability_check():
         print('INFO: Vulnerability check')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
+
         prompt = schemaPromptGenerator(prompt)
         print('Prompt:', prompt)
-        
 
         # No streaming support
         report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)

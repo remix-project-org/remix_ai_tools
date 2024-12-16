@@ -8,7 +8,8 @@ from llama_cpp import Llama, StoppingCriteriaList
 import threading, json
 from flask import request, Response
 
-DEFAULT_CONTEXT_SIZE = 2148
+DEFAULT_CONTEXT_SIZE = 2148*6
+EMPTY = ""
 use_deep_seek = True
 # completion_model = Llama(
 #   model_path=completion_model_path, 
@@ -23,11 +24,16 @@ insertion_model = Llama(
   model_path=insertsion_model_path, 
   n_threads=16,           
   n_gpu_layers=-1,
-  n_ctx=DEFAULT_CONTEXT_SIZE*6,
+  n_ctx=DEFAULT_CONTEXT_SIZE,
   verbose=False
 )
 
 lock = threading.Lock()
+
+def is_prompt_covered(prompt: str) -> int:
+    if len(insertion_model.tokenizer().encode(prompt)) > DEFAULT_CONTEXT_SIZE:
+        return False
+    return True
 
 def unpack_req_params(data):
     try:
@@ -104,6 +110,9 @@ async def run_code_completion() -> str:
         if len(context) > 1: # use context as surfix
             prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=context)
         
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
+        
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
         generate_kwargs = dict(
@@ -134,6 +143,9 @@ async def run_code_insertion() -> str:
         (code_pfx, code_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx)
 
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
+        
         # No stopping criteria as the in filling pushes in what is good
         # TODO: only allow 1 artifact generation: example 1 function, 1 contract, 1 struct, 1 interface, 1 for loop or similar. single {}
         stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
@@ -167,6 +179,8 @@ async def run_code_generation() -> str:
         
         prompt = get_cogen_prompt(prompt, is_model_deep_seek=use_deep_seek)
         stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
+        if not is_prompt_covered(prompt):
+            return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
         
         print('INFO - Code Generation')
         generate_kwargs = dict(
