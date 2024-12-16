@@ -72,13 +72,13 @@ def apply_insertsion_template(sys, msg_prefix, msg_surfix, model: SupportedModel
         <|start_header_id|>user<|end_header_id|>
         {msg_surfix}<|eot_id|>'''
     elif model == SupportedModel.deepseek:
-        return "<｜fim▁begin｜>" + msg_prefix + "<｜fim▁hole｜>" + msg_surfix + " <｜fim▁end｜>"
+        return "<｜fim▁begin｜>" + msg_prefix + "<｜fim▁hole｜>" + msg_surfix + "<｜fim▁end｜>"
     else:
-        return "<｜fim▁begin｜>" + msg_prefix + "<｜fim▁hole｜>" + msg_surfix + " <｜fim▁end｜>"
+        return "<｜fim▁begin｜>" + msg_prefix + "<｜fim▁hole｜>" + msg_surfix + "<｜fim▁end｜>"
 
 
 
-def get_coinsert_prompt(msg_prefix, msg_surfix, modelName: SupportedModel) -> str:
+def get_coinsert_prompt(msg_prefix, msg_surfix, modelName: SupportedModel=SupportedModel.deepseek) -> str:
     return apply_insertsion_template(COMPLETION_SYSTEM_PROMPT, msg_prefix, msg_surfix, modelName)
 
 def get_cocom_prompt(message: str, context: str, modelName: SupportedModel) -> str:

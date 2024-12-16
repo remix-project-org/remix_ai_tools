@@ -250,29 +250,9 @@ def vulnerability_check():
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = schemaPromptGenerator(prompt)
         
-        response_format={
-            "type": "json_object",
-            "schema": {
-                "type": "object",
-                "properties": {"Answer": {"type": "string"},
-                               "Reason": {"type": "string"},
-                               "Suggestion": {"type": "string"}
-                               },
-                "required": ["Answer", "Reason", "Suggestion"]
-            }
-        }
-        chat_generate_kwargs = dict(messages=prompt, 
-                                    response_format=response_format, 
-                                    max_tokens=max_new_tokens,
-                                    top_p=top_p, top_k=top_k, 
-                                    temperature=temperature,
-                                    repeat_penalty=repeat_penalty, 
-                                    frequency_penalty=frequency_penalty,
-                                    presence_penalty=presence_penalty
-        )
 
         # No streaming support
-        report = model.create_chat_completion(messages=prompt, response_format=response_format, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
+        report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
         if stream_result:
             return  Response(f"{json.dumps({'generatedText':report['choices'][0]['message']['content'], 'isGenerating': False})}")
         else:
