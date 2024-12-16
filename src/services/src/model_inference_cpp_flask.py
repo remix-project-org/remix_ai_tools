@@ -249,6 +249,7 @@ def vulnerability_check():
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         prompt = schemaPromptGenerator(prompt)
+        print('Prompt:', prompt)
         
 
         # No streaming support
