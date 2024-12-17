@@ -127,7 +127,6 @@ async def run_code_completion() -> str:
         with lock:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        print('INFO - Code Completion', text)
         return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
         
     except Exception as ex:
@@ -162,7 +161,6 @@ async def run_code_insertion() -> str:
         with lock:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        print('INFO - Code Insertion', text)
         return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
     except Exception as ex:
         print('ERROR - Code Insertion', ex)
@@ -174,7 +172,6 @@ async def run_code_generation() -> str:
     try:
         data = request.json
         r_obj_type = True if data.get('data', None) == None else False
-        print('Using json object request:', r_obj_type)
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
         prompt = get_cogen_prompt(prompt, is_model_deep_seek=use_deep_seek)
@@ -182,7 +179,6 @@ async def run_code_generation() -> str:
         if not is_prompt_covered(prompt):
             return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
         
-        print('INFO - Code Generation')
         generate_kwargs = dict(
             prompt=prompt,
             max_tokens=max_new_tokens,
