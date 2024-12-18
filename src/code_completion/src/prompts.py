@@ -13,4 +13,25 @@ def get_cogen_prompt(message: str, is_model_deep_seek: bool) -> str:
     return text
 
 def get_coinsert_prompt(msg_prefix, msg_surfix):
-    return "<|fim_prefix|>" + msg_prefix +  "<|fim_middle|>" + msg_surfix + "<|fim_suffix|>"
+    return "<｜fim▁begin｜>" + msg_prefix +  "<｜fim▁hole｜>" + msg_surfix + "<｜fim▁end｜>"
+
+# def get_RAG_results(user_prompt):
+#     try:
+#         start = time.time()
+#         if use_rag:
+#             retriever = VectorDBRetriever(rag_vector_store, query_mode="default", similarity_top_k=2)
+#             results = retriever.retrieve(user_prompt)
+
+#             rag_prompt = ""
+#             for idx in range(len(results)):
+#                 rag_prompt += results[idx].node.get_content() + "\n" 
+#                 print('INFO: retrieved result with score', results[idx].score)
+            
+#             print('INFO: Local RAG retrieval took', time.time() - start, "seconds")
+#             return rag_prompt
+#         else:
+#             print('INFO: RAG retrieval took', time.time() - start, "seconds")
+#             return ""
+#     except:
+#         print('INFO: RAG retrieval took', time.time() - start, "seconds")
+#         return ""
