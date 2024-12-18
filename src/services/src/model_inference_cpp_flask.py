@@ -1,4 +1,5 @@
 
+import re
 import threading, json
 from src.entry import get_app
 from src import compile
@@ -19,7 +20,10 @@ model = Llama(
 )
 EMPTY = ""
 LARGE_CONTEXT = "High context size. Try again while reducing the request context size!"
+TRY_LATER = "Try again later!"
 lock = threading.Lock()
+MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 4
+requests_counter = 0
 
 @app.before_request
 def before_request_middleware():
@@ -273,6 +277,7 @@ async def code_completion():
 # Schemas endpoints
 
 def vulnerability_check():
+    global requests_counter
     try:
         print('INFO: Vulnerability check')
         data = request.json
@@ -280,6 +285,11 @@ def vulnerability_check():
         print('#'*100)
         print('Prompt:', prompt)
         print('#'*100)
+        if requests_counter >= MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL:
+            return Response(f"{json.dumps({'data': TRY_LATER, 'generatedText':TRY_LATER})}")
+        
+        with lock:
+            requests_counter += 1
 
         if not is_prompt_covered_half(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
@@ -288,6 +298,10 @@ def vulnerability_check():
 
         # No streaming support
         report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
+        
+        with lock:
+            requests_counter -= 1
+
         if stream_result:
             return  Response(f"{json.dumps({'generatedText':report['choices'][0]['message']['content'], 'isGenerating': False})}")
         else:
