@@ -277,6 +277,10 @@ def vulnerability_check():
         print('INFO: Vulnerability check')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
+        print('#'*100)
+        print('Prompt:', prompt)
+        print('#'*100)
+
         if not is_prompt_covered_half(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
 
