@@ -296,10 +296,9 @@ def vulnerability_check():
 
         prompt = schemaPromptGenerator(prompt)
 
-        # No streaming support
-        report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
-        
         with lock:
+            # No streaming support
+            report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
             requests_counter -= 1
 
         if stream_result:
