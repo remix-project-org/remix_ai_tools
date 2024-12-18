@@ -18,7 +18,7 @@ model = Llama(
   n_ctx=CONTEXT
 )
 EMPTY = ""
-LARGE_CONTEXT = "High context size. Try reduce the request context size"
+LARGE_CONTEXT = "High context size. Try again while reducing the request context size!"
 lock = threading.Lock()
 
 @app.before_request
@@ -35,9 +35,14 @@ def after_request_middleware(response):
 
 def is_prompt_covered(prompt: str) -> int:
     if len(model.tokenizer().encode(prompt)) > CONTEXT:
+        print('Prompt is too large: ', len(model.tokenizer().encode(prompt)))
         return False
     return True
 
+def is_prompt_covered_half(prompt: str) -> int:
+    if len(model.tokenizer().encode(prompt)) > (CONTEXT // 2):
+        return False
+    return True
 
 def unpack_req_params(data):
     try:
@@ -272,11 +277,10 @@ def vulnerability_check():
         print('INFO: Vulnerability check')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-        if not is_prompt_covered(prompt):
+        if not is_prompt_covered_half(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
 
         prompt = schemaPromptGenerator(prompt)
-        print('Prompt:', prompt)
 
         # No streaming support
         report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
