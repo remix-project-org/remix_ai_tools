@@ -20,4 +20,4 @@ def read_main():
     return {"message": "Welcome to REMIX-IDE AI services"}
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

@@ -1,5 +1,6 @@
 import os
 from utils.middleware_logging import GradioProfilingMiddleware
+from prometheus_flask_exporter import PrometheusMetrics
 
     
 def get_app(servertype=None, profilMidlleware=None):
@@ -28,6 +29,7 @@ def get_app(servertype=None, profilMidlleware=None):
 
         app = Flask(__name__)
         #app.wsgi_app = GradioProfilingMiddleware(app.wsgi_app)
+        metrics = PrometheusMetrics(app)
         CORS(app)
 
         # app.wsgi_app = profilMidlleware(app.wsgi_app)
