@@ -18,7 +18,6 @@ if servertype == 'flask':
     app.add_url_rule( '/ai/api/code_generation', 'code_generation', run_code_generation, methods = ['POST'])
     app.add_url_rule( '/ai/api/code_completion', 'code_completion', run_code_completion, methods = ['POST'])
     app.debug = True
-    print('added all rules!')
 
 dashboard.config.init_from(file='../../monitoring.cfg')
 dashboard.bind(app)
