@@ -9,6 +9,7 @@ experiments/__pycache__/
 models
 **/node_modules
 **/**.csv
+**/**.db
 **/**.json
 .vscode/
 **/desktop_venv

@@ -1,0 +1,218 @@
+diff --git a/.gitignore b/.gitignore
+index 3dec84b..1d79da0 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -9,6 +9,7 @@ experiments/__pycache__/
+ models
+ **/node_modules
+ **/**.csv
++**/**.db
+ **/**.json
+ .vscode/
+ **/desktop_venv
+diff --git a/ReadMe.md b/ReadMe.md
+index eaff563..fd25204 100644
+--- a/ReadMe.md
++++ b/ReadMe.md
+@@ -29,7 +29,7 @@ First install node js and then run
+ ```bash
+ cd services
+ yarn install 
+-git fetch && git pull && MODEL=llama3_1 TOKENIZERS_PARALLELISM=true gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 3 --threads 64 --timeout 600
++git fetch && git pull && SERVERTYPE=flask MODEL=llama3_1 TOKENIZERS_PARALLELISM=true gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:7861 --access-logfile - --workers 3 --threads 64 --timeout 600
+ ```
+ Here is the list of supported models
+ * llama13b - default
+diff --git a/requirements.txt b/requirements.txt
+index adfa9da..6c1be37 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -21,4 +21,4 @@ sqlalchemy[asyncio]
+ sentence-transformers==2.7.0
+ pgvector==0.2.5 
+ flask[async]
+-prometheus-flask-exporter
++Flask-MonitoringDashboard==3.3.2
+\ No newline at end of file
+diff --git a/src/code_completion/main.py b/src/code_completion/main.py
+index 50eae79..23422d0 100644
+--- a/src/code_completion/main.py
++++ b/src/code_completion/main.py
+@@ -1,40 +1,32 @@
+ import os, sys
++servertype = os.getenv("SERVERTYPE", 'flask')
+ sys.path.append('..')
++
+ from src.entry import app
+ import logging, time
+ from flask import request, Response, g
+ from src.model_inference_cpp import run_code_completion, run_code_generation, run_code_insertion
+-
++import flask_monitoringdashboard as dashboard
+ 
+ # Set up logging
+ logging.basicConfig(level=logging.INFO)
+ logger = logging.getLogger(__name__)
+-servertype = os.getenv("SERVERTYPE", 'fastapi')
++
+ 
+ if servertype == 'flask':
+     app.add_url_rule( '/ai/api/code_insertion', 'code_insertion', run_code_insertion, methods = ['POST'])
+     app.add_url_rule( '/ai/api/code_generation', 'code_generation', run_code_generation, methods = ['POST'])
+     app.add_url_rule( '/ai/api/code_completion', 'code_completion', run_code_completion, methods = ['POST'])
++    app.debug = True
+     print('added all rules!')
+ 
++dashboard.config.init_from(file='../../monitoring.cfg')
++dashboard.bind(app)
++
+ @app.get("/ai/api")
+ def read_main():
+     print("Welcome to REMIX-IDE AI services")
+     return {"message": "Welcome to REMIX-IDE AI services"}
+ 
+-@app.before_request
+-def start_timer():
+-    """Start the timer before processing a request."""
+-    g.start_time = time.time()
+-
+-@app.after_request
+-def log_response(response):
+-    """Log the response time after processing a request."""
+-    if hasattr(g, 'start_time'):
+-        duration = time.time() - g.start_time
+-        logger.info(f"Request: {request.method} {request.path} - Response time: {duration:.4f}s")
+-        response.headers['X-Process-Time'] = str(duration)  # Add time to response headers
+-    return response
+-
+ if __name__ == "__main__":
+     app.run()
+\ No newline at end of file
+diff --git a/src/code_completion/src/model_inference_cpp.py b/src/code_completion/src/model_inference_cpp.py
+index 80121c6..09b0f38 100644
+--- a/src/code_completion/src/model_inference_cpp.py
++++ b/src/code_completion/src/model_inference_cpp.py
+@@ -89,7 +89,7 @@ def is_prompt_covered(prompt: str) -> int:
+         return False
+     return True            
+ 
+-async def run_code_completion() -> str:
++def run_code_completion() -> str:
+     
+     try:
+         data = request.json
+@@ -124,7 +124,7 @@ async def run_code_completion() -> str:
+         return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
+ 
+ 
+-async def run_code_insertion() -> str:
++def run_code_insertion() -> str:
+     
+     try:
+         data = request.json
+@@ -157,7 +157,7 @@ async def run_code_insertion() -> str:
+         return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
+ 
+ 
+-async def run_code_generation() -> str:
++def run_code_generation() -> str:
+ 
+     try:
+         data = request.json
+diff --git a/src/services/main.py b/src/services/main.py
+index 699ce82..82d554e 100644
+--- a/src/services/main.py
++++ b/src/services/main.py
+@@ -1,10 +1,14 @@
+ import os, sys
++servertype = os.getenv("SERVERTYPE", 'fastapi')
++
+ sys.path.append('..')
+ from src.entry import app
+ from src.model_inference_cpp_flask import code_completion, code_explaining, code_insertion
+ from src.model_inference_cpp_flask import error_explaining, solidity_answer, vulnerability_check
++import flask_monitoringdashboard as dashboard
++
++
+ 
+-servertype = os.getenv("SERVERTYPE", 'fastapi')
+ 
+ if servertype == 'flask':
+     app.add_url_rule( '/ai/api/code_explaining', 'code_explaining', code_explaining, methods = ['POST'])
+@@ -13,11 +17,15 @@ if servertype == 'flask':
+     app.add_url_rule( '/ai/api/code_completion', 'code_completion', code_completion, methods = ['POST'])
+     app.add_url_rule( '/ai/api/code_insertion', 'code_insertion', code_insertion, methods = ['POST'])
+     app.add_url_rule( '/ai/api/vulnerability_check', 'vulenerability_check', vulnerability_check, methods = ['POST'])
++    app.debug = True
+ 
+ @app.get("/ai/api")
+ def read_main():
+     print("Welcome to REMIX-IDE AI services")
+     return {"message": "Welcome to REMIX-IDE AI services"}
+ 
++dashboard.config.init_from(file='../../monitoring.cfg')
++dashboard.bind(app)
++
+ if __name__ == "__main__":
+     app.run(debug=True)
+\ No newline at end of file
+diff --git a/src/services/src/entry.py b/src/services/src/entry.py
+index 9ade868..f64f2ef 100644
+--- a/src/services/src/entry.py
++++ b/src/services/src/entry.py
+@@ -1,6 +1,5 @@
+ import os
+ from utils.middleware_logging import GradioProfilingMiddleware
+-from prometheus_flask_exporter import PrometheusMetrics
+ 
+     
+ def get_app(servertype=None, profilMidlleware=None):
+@@ -29,9 +28,7 @@ def get_app(servertype=None, profilMidlleware=None):
+ 
+         app = Flask(__name__)
+         #app.wsgi_app = GradioProfilingMiddleware(app.wsgi_app)
+-        metrics = PrometheusMetrics(app)
+         CORS(app)
+-
+         # app.wsgi_app = profilMidlleware(app.wsgi_app)
+     else:
+         raise Exception("Unknown server type")
+diff --git a/src/services/src/model_inference_cpp_flask.py b/src/services/src/model_inference_cpp_flask.py
+index e0b7ead..f16b815 100644
+--- a/src/services/src/model_inference_cpp_flask.py
++++ b/src/services/src/model_inference_cpp_flask.py
+@@ -1,7 +1,7 @@
+ 
+ import re
+ import threading, json
+-from src.entry import get_app
++from src.entry import app
+ from src import compile
+ from src.prompts import *
+ from typing import Iterator
+@@ -9,7 +9,6 @@ from llama_cpp import Llama, StoppingCriteriaList
+ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
+ from flask import Flask, request, jsonify, Response, g
+ 
+-app = get_app('flask')
+ 
+ CONTEXT = 3500*6
+ model = Llama(
+@@ -309,4 +308,14 @@ def vulnerability_check():
+     except Exception as ex:
+         print('ERROR -Vulnerability check', ex)
+         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
+-    
+\ No newline at end of file
++    
++
++async def contract_generation():
++    try:
++        print('INFO - Contract Generation')
++        data = request.json
++        prompt = data.get('prompt', "") if data is not None else ""
++
++    except Exception as ex:
++        print('ERROR - Contract Generation', ex)
++        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
+\ No newline at end of file

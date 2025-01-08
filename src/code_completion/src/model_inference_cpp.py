@@ -89,7 +89,7 @@ def is_prompt_covered(prompt: str) -> int:
         return False
     return True            
 
-async def run_code_completion() -> str:
+def run_code_completion() -> str:
     
     try:
         data = request.json
@@ -124,7 +124,7 @@ async def run_code_completion() -> str:
         return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
 
 
-async def run_code_insertion() -> str:
+def run_code_insertion() -> str:
     
     try:
         data = request.json
@@ -157,7 +157,7 @@ async def run_code_insertion() -> str:
         return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
 
 
-async def run_code_generation() -> str:
+def run_code_generation() -> str:
 
     try:
         data = request.json

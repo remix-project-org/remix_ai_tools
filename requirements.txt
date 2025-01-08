@@ -21,4 +21,4 @@ sqlalchemy[asyncio]
 sentence-transformers==2.7.0
 pgvector==0.2.5 
 flask[async]
-prometheus-flask-exporter
+Flask-MonitoringDashboard==3.3.2

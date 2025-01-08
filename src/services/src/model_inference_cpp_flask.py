@@ -1,7 +1,7 @@
 
 import re
 import threading, json
-from src.entry import get_app
+from src.entry import app
 from src import compile
 from src.prompts import *
 from typing import Iterator
@@ -9,7 +9,6 @@ from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from flask import Flask, request, jsonify, Response, g
 
-app = get_app('flask')
 
 CONTEXT = 3500*6
 model = Llama(
@@ -25,18 +24,6 @@ TRY_LATER = "Try again later!"
 lock = threading.Lock()
 MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 4
 requests_counter = 0
-
-@app.before_request
-def before_request_middleware():
-    g.request_start_time = time.time()
-    print(f"Incoming request: {request.method} {request.path}")
-
-@app.after_request
-def after_request_middleware(response):
-    if hasattr(g, 'request_start_time'):
-        elapsed = time.time() - g.request_start_time
-        print(f"Request processed in {elapsed:.5f} seconds")
-    return response
 
 def is_prompt_covered(prompt: str) -> int:
     if len(model.tokenizer().encode(prompt)) > CONTEXT:
@@ -105,7 +92,7 @@ def generate(generate_kwargs):
             yield f"{json.dumps({'generatedText': text, 'isGenerating': True})}"
         yield f"{json.dumps({'generatedText': '', 'isGenerating': False})}"
 
-async def code_explaining(): 
+def code_explaining(): 
     try:
         print('INFO - Code Explaining')
         data = request.json
@@ -137,7 +124,7 @@ async def code_explaining():
         print('ERROR - Code Explaining', ex)
         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
 
-async def solidity_answer(): 
+def solidity_answer(): 
     try:
         print('INFO - solidity Answer')
         data = request.json
@@ -172,7 +159,7 @@ async def solidity_answer():
         print('ERROR - Solidity Answer', ex)
         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
 
-async def error_explaining():
+def error_explaining():
     try:
         print('INFO - Error Explaining')
         data = request.json
@@ -204,7 +191,7 @@ async def error_explaining():
         print('ERROR - Error Explaining')
         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
-async def code_insertion(): 
+def code_insertion(): 
     try:
         print('INFO - Code Insertion')
         data = request.json
@@ -243,7 +230,7 @@ async def code_insertion():
         print('ERROR - Code Insertion', ex)
         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
-async def code_completion(): 
+def code_completion(): 
     try:
         print('INFO - Code Completion')
         data = request.json
@@ -310,3 +297,13 @@ def vulnerability_check():
         print('ERROR -Vulnerability check', ex)
         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
+
+def contract_generation():
+    try:
+        print('INFO - Contract Generation')
+        data = request.json
+        prompt = data.get('prompt', "") if data is not None else ""
+
+    except Exception as ex:
+        print('ERROR - Contract Generation', ex)
+        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
