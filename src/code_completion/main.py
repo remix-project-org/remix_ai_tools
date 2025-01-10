@@ -19,13 +19,28 @@ if servertype == 'flask':
     app.add_url_rule( '/ai/api/code_completion', 'code_completion', run_code_completion, methods = ['POST'])
     app.debug = True
 
-dashboard.config.init_from(file='../../monitoring.cfg')
-dashboard.bind(app)
 
 @app.get("/ai/api")
 def read_main():
     print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
+dashboard.config.init_from(file='../../monitoring.cfg')
+dashboard.bind(app)
+
+@app.before_request
+def start_timer():
+    """Start the timer before processing a request."""
+    g.start_time = time.time()
+
+@app.after_request
+def log_response(response):
+    """Log the response time after processing a request."""
+    if hasattr(g, 'start_time'):
+        duration = time.time() - g.start_time
+        logger.info(f"Request: {request.method} {request.path} - Response time: {duration:.4f}s")
+        response.headers['X-Process-Time'] = str(duration)  # Add time to response headers
+    return response
+
 
 if __name__ == "__main__":
     app.run()
