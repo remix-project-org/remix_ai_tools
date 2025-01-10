@@ -10,6 +10,7 @@ models
 **/node_modules
 **/**.csv
 **/**.db
+**/**.cfg
 **/**.json
 .vscode/
 **/desktop_venv
