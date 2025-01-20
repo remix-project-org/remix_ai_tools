@@ -23,7 +23,7 @@ EMPTY = ""
 LARGE_CONTEXT = "High context size. Try again while reducing the request context size!"
 TRY_LATER = "Try again later!"
 lock = threading.Lock()
-MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 3
+MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 1
 requests_counter = 0
 
 def is_prompt_covered(prompt: str) -> int:
