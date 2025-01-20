@@ -275,6 +275,7 @@ def vulnerability_check():
         print('Prompt:', prompt)
         print('#'*100)
         if requests_counter >= MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL:
+            print('Too many requests')
             return Response(f"{json.dumps({'data': TRY_LATER, 'generatedText':TRY_LATER})}")
         
         requests_counter += 1
