@@ -16,3 +16,4 @@ models
 **/desktop_venv
 **/imgs
 **/.DS_Store
+src/monitoring.cfg

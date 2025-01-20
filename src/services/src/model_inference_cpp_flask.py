@@ -16,13 +16,14 @@ model = Llama(
   n_threads=1,           
   n_gpu_layers=-1,
   verbose=False, 
+  chat_format="chatml",
   n_ctx=CONTEXT
 )
 EMPTY = ""
 LARGE_CONTEXT = "High context size. Try again while reducing the request context size!"
 TRY_LATER = "Try again later!"
 lock = threading.Lock()
-MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 4
+MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 3
 requests_counter = 0
 
 def is_prompt_covered(prompt: str) -> int:
@@ -276,8 +277,7 @@ def vulnerability_check():
         if requests_counter >= MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL:
             return Response(f"{json.dumps({'data': TRY_LATER, 'generatedText':TRY_LATER})}")
         
-        with lock:
-            requests_counter += 1
+        requests_counter += 1
 
         if not is_prompt_covered_half(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
@@ -297,13 +297,3 @@ def vulnerability_check():
         print('ERROR -Vulnerability check', ex)
         return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
     
-
-def contract_generation():
-    try:
-        print('INFO - Contract Generation')
-        data = request.json
-        prompt = data.get('prompt', "") if data is not None else ""
-
-    except Exception as ex:
-        print('ERROR - Contract Generation', ex)
-        return Response(f"{json.dumps({'data': EMPTY, 'generatedText':EMPTY})}")
