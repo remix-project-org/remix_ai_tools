@@ -3,6 +3,7 @@ servertype = os.getenv("SERVERTYPE", 'fastapi')
 
 sys.path.append('..')
 from src.entry import app
+from flask import g, request
 from src.model_inference_cpp_flask import code_completion, code_explaining, code_insertion
 from src.model_inference_cpp_flask import error_explaining, solidity_answer, vulnerability_check
 import flask_monitoringdashboard as dashboard
@@ -23,6 +24,13 @@ if servertype == 'flask':
 def read_main():
     print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
+
+@app.before_request
+def log_origin():
+    #print the request url and log the ip address
+    print(f"Request URL: {request.url}")
+    print(f"Request IP: {request.remote_addr}")
+
 
 dashboard.config.init_from(file='../../monitoring.cfg')
 dashboard.bind(app)
