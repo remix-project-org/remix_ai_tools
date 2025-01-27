@@ -271,9 +271,6 @@ def vulnerability_check():
         print('INFO: Vulnerability check')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-        print('#'*100)
-        print('Prompt:', prompt)
-        print('#'*100)
         if requests_counter >= MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL:
             print('Too many requests')
             return Response(f"{json.dumps({'data': TRY_LATER, 'generatedText':TRY_LATER})}")
