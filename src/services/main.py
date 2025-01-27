@@ -25,12 +25,6 @@ def read_main():
     print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
 
-@app.before_request
-def log_origin():
-    #print the request url and log the ip address
-    print(f"Request URL: {request.url}")
-    print(f"Request IP: {request.remote_addr}")
-
 
 dashboard.config.init_from(file='../../monitoring.cfg')
 dashboard.bind(app)
