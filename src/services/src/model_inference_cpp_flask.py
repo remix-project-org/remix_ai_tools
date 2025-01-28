@@ -23,8 +23,6 @@ EMPTY = ""
 LARGE_CONTEXT = "High context size. Try again while reducing the request context size!"
 TRY_LATER = "Try again later!"
 lock = threading.Lock()
-MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL = 1
-requests_counter = 0
 
 def is_prompt_covered(prompt: str) -> int:
     if len(model.tokenizer().encode(prompt)) > CONTEXT:
@@ -266,16 +264,12 @@ def code_completion():
 # Schemas endpoints
 
 def vulnerability_check():
-    global requests_counter
     try:
         print('INFO: Vulnerability check')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-        if requests_counter >= MAX_VULNERABILITY_CHECK_REQUESTS_PARALLEL:
-            print('Too many requests')
-            return Response(f"{json.dumps({'data': TRY_LATER, 'generatedText':TRY_LATER})}")
         
-        requests_counter += 1
+        
 
         if not is_prompt_covered_half(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
@@ -285,7 +279,6 @@ def vulnerability_check():
         with lock:
             # No streaming support
             report = model.create_chat_completion(messages=prompt, max_tokens=max_new_tokens, top_p=top_p, top_k=top_k, temperature=temperature, repeat_penalty=repeat_penalty, frequency_penalty=frequency_penalty, presence_penalty=presence_penalty)
-            requests_counter -= 1
 
         if stream_result:
             return  Response(f"{json.dumps({'generatedText':report['choices'][0]['message']['content'], 'isGenerating': False})}")
