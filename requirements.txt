@@ -4,15 +4,10 @@ pandas==2.2.0
 peft==0.7.1
 scipy==1.11.2
 solc-select==1.0.4
-gradio
 python-dotenv
 hf_transfer
 gunicorn
 locust
-solc-select==1.0.4
-py-solc==3.2.0
-py-solc-x==2.0.2
-slither-analyzer
 llama-index-core==0.10.39.post1
 llama-index-vector-stores-postgres==0.1.7
 psycopg2-binary
