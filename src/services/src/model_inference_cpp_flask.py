@@ -24,6 +24,7 @@ LARGE_CONTEXT = "High context size. Try again while reducing the request context
 TRY_LATER = "Try again later!"
 lock = threading.Lock()
 csv_logger = CSVLogger('Clogs.csv')
+error_logger = CSVLogger('Elogs.csv')
 
 def is_prompt_covered(prompt: str) -> int:
     if len(model.tokenizer().encode(prompt)) > CONTEXT:
@@ -127,10 +128,11 @@ def code_explaining():
 def solidity_answer(): 
     try:
         print('INFO - solidity Answer')
+        print(model_path)
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
-        csv_logger.log(prompt)
+        csv_logger.log(prompt, ctx='', model=model_path)
         prompt = get_answer_prompt(prompt)
         if not is_prompt_covered(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
@@ -165,6 +167,8 @@ def error_explaining():
         print('INFO - Error Explaining')
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
+        error_logger.log(prompt, ctx=context, model=model_path)
+        
         prompt = get_codexplain_prompt(prompt, context=context)
         if not is_prompt_covered(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
