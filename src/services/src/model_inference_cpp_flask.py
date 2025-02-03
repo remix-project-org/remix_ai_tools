@@ -128,7 +128,6 @@ def code_explaining():
 def solidity_answer(): 
     try:
         print('INFO - solidity Answer')
-        print(model_path)
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         

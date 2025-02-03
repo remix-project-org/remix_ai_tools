@@ -21,10 +21,6 @@ class CSVLogger:
     def _write_log(self, message, ctx="", model=""):
         current_date = datetime.now().strftime('%Y-%m-%d')
         current_time = datetime.now().strftime('%H:%M:%S')
-        # check if string in message contains '<|eot_id|>'
-        if message.find('<|eot_id|>') != -1:
-            message = message.split('<|eot_id|>')[-1]
-            print('new message:', message)
         
         with open(self.filename, mode='a', newline='') as file:
             writer = csv.writer(file)
