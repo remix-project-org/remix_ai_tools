@@ -56,3 +56,31 @@ locust -f load_test.py  -u 10 -r 5 -t 5m --html report.html
     -d '{"data":["pragma solidity 0.8.0\n", "", false,200,1,0.8,50]}' \
     -X POST http://0.0.0.0:7860/ai/api/code_completion
 ```
+
+
+## Load balance on multiple process workers
+Add the fgollowing in the `/etc/nginx/nginx.conf`
+```
+    upstream gunicorn_servers {
+        server 127.0.0.1:7861;  # Gunicorn for GPU 0
+        server 127.0.0.1:7862;  # Gunicorn for GPU 1
+    }
+
+    server {
+        listen 7860;  # Nginx listens on port 7860
+
+        location / {
+            proxy_pass http://gunicorn_servers;  # Proxy requests to the upstream servers
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+```
+
+Now depending on the amount of GPUs `0`, `1`, launch the workers
+```
+export CUDA_VISIBLE_DEVICES=0
+TOKENIZERS_PARALLELISM=true SERVERTYPE=flask  gunicorn --bind=0.0.0.0:7862 main:app --access-logfile - --workers 10 --threads 10 --timeout 600
+```

@@ -8,7 +8,7 @@ from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from flask import Flask, request, jsonify, Response, g
-
+from services.src.utils.csv_logger import CSVLogger
 
 CONTEXT = 3500*6
 model = Llama(
@@ -23,6 +23,7 @@ EMPTY = ""
 LARGE_CONTEXT = "High context size. Try again while reducing the request context size!"
 TRY_LATER = "Try again later!"
 lock = threading.Lock()
+csv_logger = CSVLogger('Clogs.csv')
 
 def is_prompt_covered(prompt: str) -> int:
     if len(model.tokenizer().encode(prompt)) > CONTEXT:
@@ -129,6 +130,7 @@ def solidity_answer():
         data = request.json
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
+        csv_logger.log(prompt)
         prompt = get_answer_prompt(prompt)
         if not is_prompt_covered(prompt):
             return Response(f"{json.dumps({'data': LARGE_CONTEXT, 'generatedText':LARGE_CONTEXT})}")
