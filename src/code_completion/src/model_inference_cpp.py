@@ -56,6 +56,8 @@ def unpack_req_params(data):
             temperature = float(data.get('temperature', 0.8))
             top_p = float(data.get('top_p', 0.9))
             top_k = int(data.get('top_k', 50))
+            ctxFiles = data.get('ctxFiles', None)
+            fileName = data.get('currentFileName', None)
 
             if data.get('msg_pfx', "") == "":
                 msg_pfx = data.get('prompt', "")
@@ -67,7 +69,7 @@ def unpack_req_params(data):
             repeat_penalty= float(data.get('repeat_penalty', 1.2))
             frequency_penalty= float(data.get('frequency_penalty', 0.2))
             presence_penalty= float(data.get('presence_penalty', 0.2))
-        return [msg_pfx, msg_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty]
+        return [msg_pfx, msg_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty, ctxFiles, fileName]
             
     except Exception as ex:
         print(ex)
@@ -81,7 +83,9 @@ def unpack_req_params(data):
         repeat_penalty= float(data.get('repeat_penalty', 1.2))
         frequency_penalty= float(data.get('frequency_penalty', 0.2))
         presence_penalty= float(data.get('presence_penalty', 0.2))
-        return [prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty]
+        ctxFiles = data.get('ctxFiles', None)
+        fileName = data.get('currentFileName', None)
+        return [prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty, ctxFiles, fileName]
 
 def is_prompt_covered(prompt: str) -> int:
     if len(insertion_model.tokenizer().encode(prompt)) > DEFAULT_CONTEXT_SIZE:
@@ -89,19 +93,43 @@ def is_prompt_covered(prompt: str) -> int:
         return False
     return True            
 
-def run_code_completion() -> str:
+
+def refine_context(words1: str, words2: str):
+    total_words = len(insertion_model.tokenizer().encode(words1)) + len(insertion_model.tokenizer().encode(words2))
+    
+    if total_words <= DEFAULT_CONTEXT_SIZE:
+        return [words1, words2]
+    
+    half_max_words = DEFAULT_CONTEXT_SIZE // 2
+
+    take_from_text1 = min(len(words1), half_max_words)
+    take_from_text2 = min(len(words2), half_max_words)
+
+    if len(words1) < half_max_words and len(words2) + len(words1) <= DEFAULT_CONTEXT_SIZE:
+        take_from_text2 = min(len(words2), DEFAULT_CONTEXT_SIZE - len(words1))
+    elif len(words2) < half_max_words and len(words1) + len(words2) <= DEFAULT_CONTEXT_SIZE:
+        take_from_text1 = min(len(words1), DEFAULT_CONTEXT_SIZE - len(words2))
+    elif len(words1) < half_max_words and len(words2) + len(words1) >= DEFAULT_CONTEXT_SIZE:
+        take_from_text2 = min(len(words2), DEFAULT_CONTEXT_SIZE - len(words1))
+    elif len(words2) > half_max_words and len(words1) + len(words2) <= DEFAULT_CONTEXT_SIZE:
+        take_from_text1 = min(len(words1), DEFAULT_CONTEXT_SIZE - len(words2))
+
+    spliced_text1 = words1[-take_from_text1:]
+    spliced_text2 = words2[:take_from_text2]
+
+    return [spliced_text1, spliced_text2]
+
+def run_code_completion():
     
     try:
         data = request.json
         # return json obj if request body is json
         r_obj_type = True if data.get('data', None) == None else False
-        (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
+        (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty, ctxFiles, fileName) = unpack_req_params(data)
         
-        if len(context) > 1: # use context as surfix
-            prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=context)
-        
-        if not is_prompt_covered(prompt):
-            return  Response(f"{json.dumps({'generatedText': EMPTY})}") if r_obj_type else Response(f"{json.dumps({'data': [EMPTY]})}")
+        prompt = add_workspace_ctx(ctxFiles, fileName, prompt)
+        prompt, context = refine_context(prompt, context)
+        prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=context)
 
         stopping_criteria = StoppingCriteriaList([StopOnTokensNL(insertion_model.tokenizer())])
 
@@ -124,19 +152,17 @@ def run_code_completion() -> str:
         return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
 
 
-def run_code_insertion() -> str:
+def run_code_insertion():
     
     try:
         data = request.json
         r_obj_type = True if data.get('data', None) == None else False
-        (code_pfx, code_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
-        prompt = get_coinsert_prompt(msg_prefix=code_pfx, msg_surfix=code_sfx)
+        (code_pfx, code_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty,  ctxFiles, fileName) = unpack_req_params(data)
         
-        if not is_prompt_covered(prompt):
-            return  Response(f"{json.dumps({'generatedText': EMPTY})}") if r_obj_type else Response(f"{json.dumps({'data': [EMPTY]})}")
-
-        # No stopping criteria as the in filling pushes in what is good
-        # TODO: only allow 1 artifact generation: example 1 function, 1 contract, 1 struct, 1 interface, 1 for loop or similar. single {}
+        prompt = add_workspace_ctx(ctxFiles, fileName, code_pfx)
+        prompt, code_sfx = refine_context(prompt, code_sfx)
+        prompt = get_coinsert_prompt(msg_prefix=prompt, msg_surfix=code_sfx)
+        
         stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
 
         generate_kwargs = dict(

@@ -41,6 +41,5 @@ def log_response(response):
         response.headers['X-Process-Time'] = str(duration)  # Add time to response headers
     return response
 
-
 if __name__ == "__main__":
     app.run()

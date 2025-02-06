@@ -12,6 +12,7 @@ models
 **/**.db
 **/**.cfg
 **/**.json
+**/**.ipynb
 .vscode/
 **/desktop_venv
 **/imgs
