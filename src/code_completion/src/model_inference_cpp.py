@@ -47,7 +47,8 @@ def unpack_req_params(data):
             repeat_penalty= float(data.get('repeat_penalty', 1.2))
             frequency_penalty= float(data.get('frequency_penalty', 0.2))
             presence_penalty= float(data.get('presence_penalty', 0.2))
-
+            ctxFiles = data.get('ctxFiles', None)
+            fileName = data.get('currentFileName', None)
         else:
             #unpack objects
             stream_result = data.get('stream_result', False)
