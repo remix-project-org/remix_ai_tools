@@ -24,7 +24,6 @@ if servertype == 'flask':
 def read_main():
     print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
-dashboard.config.init_from(file='../monitoring.cfg')
 dashboard.bind(app)
 
 @app.before_request
