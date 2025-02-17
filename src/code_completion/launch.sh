@@ -15,5 +15,3 @@ for ((i=1; i<=4; i++)); do
         CUDA_VISIBLE_DEVICES=0 SERVERTYPE=flask gunicorn --workers=7 --threads=20 --timeout=30 --bind 0.0.0.0:7864 --timeout 600 $app_module  
     fi
 done
-
-wait
