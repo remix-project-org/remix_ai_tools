@@ -17,3 +17,4 @@ sentence-transformers==2.7.0
 pgvector==0.2.5 
 flask[async]
 Flask-MonitoringDashboard==3.3.2
+fastapi==0.115.8
