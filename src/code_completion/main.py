@@ -1,5 +1,6 @@
 import os, sys
 servertype = os.getenv("SERVERTYPE", 'flask')
+cuda_device = os.getenv("CUDA_VISIBLE_DEVICES")
 sys.path.append('..')
 
 from src.entry import app
@@ -36,9 +37,10 @@ def log_response(response):
     """Log the response time after processing a request."""
     if hasattr(g, 'start_time'):
         duration = time.time() - g.start_time
-        logger.info(f"Request: {request.method} {request.path} - Response time: {duration:.4f}s")
+        logger.info(f"Worker: {cuda_device} Request: {request.method} {request.path} - Response time: {duration:.4f}s")
         response.headers['X-Process-Time'] = str(duration)  # Add time to response headers
     return response
 
 if __name__ == "__main__":
     app.run()
+    print(f"Worker {cuda_device} started")
