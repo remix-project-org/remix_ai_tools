@@ -7,7 +7,6 @@ from src.entry import app
 import logging, time
 from flask import request, Response, g
 from src.model_inference_cpp import run_code_completion, run_code_generation, run_code_insertion
-import flask_monitoringdashboard as dashboard
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -25,7 +24,6 @@ if servertype == 'flask':
 def read_main():
     print("Welcome to REMIX-IDE AI services")
     return {"message": "Welcome to REMIX-IDE AI services"}
-dashboard.bind(app)
 
 @app.before_request
 def start_timer():
