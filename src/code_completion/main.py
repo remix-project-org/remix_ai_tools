@@ -39,7 +39,7 @@ def log_response(response):
         response.headers['X-Process-Time'] = str(duration)  # Add time to response headers
     return response
 
-print(f"Worker dor device {cuda_device} started")
+print(f"Worker for device {cuda_device} started")
 
 if __name__ == "__main__":
     app.run()
