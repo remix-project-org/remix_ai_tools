@@ -4,8 +4,8 @@ from pygments.util import ClassNotFound
 
 COMPLETION_SYSTEM_PROMPT = "You are a Solidity AI Assistant that complete user code with provided context. You provide accurate solution and always answer as helpfully as possible, while being safe. You only provide code using this context:\n"
 
-completion_model_path = "../../models/deepseek-coder-1.3b-base-q4.gguf"
-insertsion_model_path = "../../models/deepseek-coder-1.3b-base-q4.gguf"
+completion_model_path = "./models/deepseek-coder-1.3b-base-q4.gguf"
+insertsion_model_path = "./models/deepseek-coder-1.3b-base-q4.gguf"
 
 def get_cocom_prompt(message: str, is_model_deep_seek: bool) -> str:
     return get_cogen_prompt(message, is_model_deep_seek)

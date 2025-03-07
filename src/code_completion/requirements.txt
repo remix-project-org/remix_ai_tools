@@ -1,0 +1,4 @@
+numpy==1.24.3
+flask[async]
+fastapi==0.115.8
+runpod==1.7.7

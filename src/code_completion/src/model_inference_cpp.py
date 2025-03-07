@@ -4,7 +4,6 @@ from src.llm_output_parser import StopOnTokens, StopOnTokensNL
 from typing import Iterator
 from llama_cpp import Llama, StoppingCriteriaList
 import threading, json
-from flask import request, Response
 
 DEFAULT_CONTEXT_SIZE = 2048*7
 EMPTY = ""
@@ -19,6 +18,18 @@ insertion_model = Llama(
 )
 
 lock = threading.Lock()
+
+def rp_handler(event):
+    task = 'code_completion' if event['input'].get('msg_pfx', None) == None else 'code_insertion'
+    print('running with task:', task, event.get('msg_pfx', None))
+    if task == 'code_completion':
+        return run_code_completion(event['input'])
+    elif task == 'code_insertion':
+        return run_code_insertion(event['input'])
+    elif task == 'code_generation':
+        return run_code_generation(event['input'])
+    else:
+        return f"{json.dumps({'generatedText': ''})}"
 
 def unpack_req_params(data):
     try:
@@ -120,10 +131,10 @@ def refine_context(words1: str, words2: str):
 
     return [spliced_text1, spliced_text2]
 
-def run_code_completion():
+def run_code_completion(event):
     
     try:
-        data = request.json
+        data = event
         # return json obj if request body is json
         r_obj_type = True if data.get('data', None) == None else False
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty, ctxFiles, fileName) = unpack_req_params(data)
@@ -146,17 +157,17 @@ def run_code_completion():
         with lock:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
+        return  f"{json.dumps({'generatedText': text})}" if r_obj_type else f"{json.dumps({'data': [text]})}"
         
     except Exception as ex:
         print('ERROR - Code Completion', ex)
-        return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
+        return  f"{json.dumps({'generatedText': ''})}" if r_obj_type else f"{json.dumps({'data': ['']})}"
 
 
-def run_code_insertion():
+def run_code_insertion(event):
     
     try:
-        data = request.json
+        data = event
         r_obj_type = True if data.get('data', None) == None else False
         (code_pfx, code_sfx, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty,  ctxFiles, fileName) = unpack_req_params(data)
         
@@ -178,23 +189,23 @@ def run_code_insertion():
         with lock:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
-        return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
+        return  f"{json.dumps({'generatedText': text})}" if r_obj_type else f"{json.dumps({'data': [text]})}"
     except Exception as ex:
         print('ERROR - Code Insertion', ex)
-        return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
+        return  f"{json.dumps({'generatedText': ''})}" if r_obj_type else f"{json.dumps({'data': ['']})}"
 
 
-def run_code_generation() -> str:
+def run_code_generation(event) -> str:
 
     try:
-        data = request.json
+        data = event
         r_obj_type = True if data.get('data', None) == None else False
         (prompt, context, stream_result, max_new_tokens, temperature, top_k, top_p, repeat_penalty, frequency_penalty, presence_penalty) = unpack_req_params(data)
         
         prompt = get_cogen_prompt(prompt, is_model_deep_seek=use_deep_seek)
         stopping_criteria = StoppingCriteriaList([StopOnTokens(insertion_model.tokenizer())])
         if not is_prompt_covered(prompt):
-            return  Response(f"{json.dumps({'generatedText': EMPTY})}") if r_obj_type else Response(f"{json.dumps({'data': [EMPTY]})}")
+            return  f"{json.dumps({'generatedText': EMPTY})}" if r_obj_type else f"{json.dumps({'data': [EMPTY]})}"
 
         generate_kwargs = dict(
             prompt=prompt,
@@ -209,7 +220,7 @@ def run_code_generation() -> str:
             outputs = insertion_model(**generate_kwargs)
         text = outputs["choices"][0]["text"].strip()
         text = text.replace("```solidity \n", "").replace("```", "")
-        return  Response(f"{json.dumps({'generatedText': text})}") if r_obj_type else Response(f"{json.dumps({'data': [text]})}")
+        return  f"{json.dumps({'generatedText': text})}" if r_obj_type else f"{json.dumps({'data': [text]})}"
     except Exception as ex:
         print('ERROR - Code generation', ex)
-        return  Response(f"{json.dumps({'generatedText': ''})}") if r_obj_type else Response(f"{json.dumps({'data': ['']})}")
+        return  f"{json.dumps({'generatedText': ''})}" if r_obj_type else f"{json.dumps({'data': ['']})}"
